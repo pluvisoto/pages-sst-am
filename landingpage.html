@@ -1,14 +1,1119 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>AM Engenharia | Regularizacao NR-1</title>
-    <meta name="description" content="Regularize PGR, PCMSO e DIR com entrega digital e suporte tecnico especializado da AM Engenharia." />
-    <meta name="theme-color" content="#0a0a0a" />
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main-landingpage.jsx"></script>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AM Engenharia | Regularizacao NR-1</title>
+  <meta name="description" content="Regularize PGR, PCMSO e DIR com entrega digital e suporte tecnico especializado da AM Engenharia." />
+  <meta name="theme-color" content="#0a0a0a" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <script src="env.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: #0a0a0a; color: #f0f0f0; min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; text-decoration: none; }
+    button { font-family: inherit; }
+    input, select, textarea { font-family: inherit; }
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem; }
+
+    /* Header */
+    .header {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: rgba(10, 10, 10, 0.92); backdrop-filter: blur(12px);
+      border-bottom: 1px solid #222; padding: 0 2rem;
+    }
+    .header-inner {
+      max-width: 1100px; margin: 0 auto;
+      display: flex; justify-content: space-between; align-items: center;
+      height: 64px; flex-wrap: wrap; gap: 0.5rem;
+    }
+    .header-logos { display: flex; align-items: center; gap: 1rem; }
+    .header-logo { height: 44px; width: auto; }
+    .header-partner-logo { height: 56px; width: auto; max-width: 220px; object-fit: contain; }
+    .header-cta {
+      padding: 0.5rem 1.25rem; border-radius: 8px; border: none;
+      background: #d4af37; color: #121212; font-weight: 700; font-size: 0.85rem;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .header-badge {
+      padding: 0.3rem 0.75rem; border-radius: 6px; font-size: 0.7rem;
+      font-weight: 700; letter-spacing: 0.5px; color: #fbbf24;
+      background: rgba(251, 191, 36, 0.1); border: 1px solid rgba(251, 191, 36, 0.25);
+    }
+    .header-nav { display: flex; gap: 0.5rem; align-items: center; }
+    .header-right { display: flex; align-items: center; gap: 1rem; }
+    .nav-link {
+      background: none; border: 1px solid #333; border-radius: 8px;
+      color: #d1d5db; padding: 0.4rem 0.75rem; font-size: 0.8rem;
+      cursor: pointer; transition: all 0.2s; font-weight: 500;
+    }
+    .nav-link-subtle {
+      background: none; border: none; color: #6b7280;
+      padding: 0.4rem 0.5rem; font-size: 0.75rem; cursor: pointer; font-weight: 500;
+    }
+
+    /* Hero */
+    .hero {
+      padding-top: 120px; padding-bottom: 60px;
+      background: linear-gradient(180deg, #0a0a0a 0%, #121212 100%);
+      text-align: center;
+    }
+    .hero-logo { height: 140px; width: auto; max-width: 400px; object-fit: contain; margin-bottom: 2rem; }
+    .hero-title {
+      font-size: clamp(1.8rem, 4.5vw, 3rem); font-weight: 800; color: #fff;
+      margin: 0 0 1.25rem 0; line-height: 1.15; letter-spacing: -0.02em;
+    }
+    .hero-subtitle {
+      font-size: 1.1rem; color: #9ca3af; max-width: 700px; margin: 0 auto 2.5rem auto;
+      line-height: 1.7;
+    }
+
+    /* Video */
+    .video-wrapper {
+      max-width: 740px; margin: 0 auto 2.5rem auto; aspect-ratio: 16 / 9;
+      border-radius: 16px; overflow: hidden; border: 1px solid #333; background: #111;
+    }
+    .video-wrapper iframe { width: 100%; height: 100%; border: none; }
+    .video-placeholder {
+      width: 100%; height: 100%; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; background: #111;
+    }
+    .video-placeholder span { font-size: 3rem; }
+    .video-placeholder p { color: #6b7280; margin: 1rem 0 0 0; font-size: 0.95rem; }
+
+    /* Buttons */
+    .cta-button {
+      padding: 1rem 2.5rem; border-radius: 12px; border: none;
+      background: #d4af37; color: #121212; font-weight: 700; font-size: 1.1rem;
+      cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 20px rgba(212, 175, 55, 0.25);
+      display: inline-block;
+    }
+    .cta-button:hover { background: #22c55e; transform: translateY(-2px); }
+
+    /* Sections */
+    .section { padding: 5rem 0; }
+    .section-badge {
+      text-align: center; display: block; color: #d4af37; font-size: 0.85rem;
+      font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 1rem;
+    }
+    .section-title {
+      text-align: center; font-size: 2rem; font-weight: 800; color: #fff;
+      margin: 0 0 0.75rem 0; letter-spacing: -0.01em;
+    }
+    .section-subtitle {
+      text-align: center; color: #9ca3af; font-size: 1.05rem; max-width: 700px;
+      margin: 0 auto 3rem auto; line-height: 1.6;
+    }
+    .anchor-badge {
+      text-align: center; margin-top: 3rem; color: #6b7280; font-size: 0.8rem;
+      font-weight: 600; letter-spacing: 1px; cursor: pointer; padding: 0.5rem;
+      transition: color 0.2s;
+    }
+    .anchor-badge:hover { color: #d4af37; }
+
+    /* Card Grid */
+    .card-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+    .card {
+      background: #151515; border: 1px solid #2a2a2a; border-radius: 16px;
+      padding: 2rem; transition: border-color 0.2s;
+    }
+    .card:hover { border-color: #444; }
+    .solution-card { background: #151515; border: 1px solid #2a2a2a; border-radius: 16px; padding: 2rem; }
+    .solution-card-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; }
+    .solution-card-title { color: #d4af37; font-size: 1.4rem; font-weight: 800; margin: 0; }
+    .solution-card-subtitle { color: #9ca3af; font-size: 0.9rem; margin: 0 0 0.75rem 0; font-weight: 600; }
+    .solution-card-desc { color: #d1d5db; font-size: 0.95rem; line-height: 1.6; margin: 0 0 1rem 0; }
+    .solution-card-signed { display: flex; align-items: center; gap: 0.5rem; color: #22c55e; font-size: 0.9rem; font-weight: 600; }
+
+    .esocial-callout {
+      display: flex; align-items: center; gap: 1rem; max-width: 700px;
+      margin: 2.5rem auto 0; padding: 1.25rem 1.5rem; border-radius: 12px;
+      background: rgba(34, 197, 94, 0.08); border: 1px solid rgba(34, 197, 94, 0.25);
+    }
+    .esocial-callout span { font-size: 1.5rem; }
+    .esocial-callout p { color: #d1d5db; margin: 0; font-size: 1rem; font-weight: 600; line-height: 1.5; }
+
+    /* Technology */
+    .tech-layout { display: flex; gap: 3rem; align-items: flex-start; flex-wrap: wrap; justify-content: center; }
+    .mockup-container {
+      flex: 1 1 340px; max-width: 420px; background: #1a1a1a;
+      border: 1px solid #333; border-radius: 16px; overflow: hidden;
+    }
+    .mockup-placeholder {
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; padding: 4rem 2rem; text-align: center;
+    }
+    .features-list { flex: 1 1 320px; display: flex; flex-direction: column; gap: 1.25rem; }
+    .feature-item { display: flex; gap: 1rem; align-items: flex-start; }
+    .feature-check {
+      width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0;
+      background: rgba(34, 197, 94, 0.15); color: #22c55e;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 0.85rem; margin-top: 2px;
+    }
+    .feature-item h4 { color: #f0f0f0; margin: 0 0 0.25rem 0; font-size: 1.05rem; font-weight: 700; }
+    .feature-item p { color: #9ca3af; margin: 0; font-size: 0.9rem; line-height: 1.5; }
+
+    /* Audience & Authority cards */
+    .audience-card { text-align: center; padding: 2rem 1.5rem; }
+    .audience-card span.emoji { font-size: 2.5rem; display: block; margin-bottom: 1rem; }
+    .audience-card h3 { color: #f0f0f0; margin: 0 0 0.5rem 0; font-size: 1.1rem; font-weight: 700; }
+    .audience-card p { color: #9ca3af; margin: 0; font-size: 0.9rem; line-height: 1.5; }
+
+    /* Stats bar */
+    .stats-bar {
+      display: flex; justify-content: center; gap: 3rem; flex-wrap: wrap;
+      padding: 2rem 0; border-top: 1px solid #2a2a2a; border-bottom: 1px solid #2a2a2a;
+    }
+    .stat-item { text-align: center; min-width: 160px; }
+    .stat-item .value { color: #d4af37; font-size: 2rem; font-weight: 800; margin: 0; }
+    .stat-item .label { color: #9ca3af; margin: 0.25rem 0 0 0; font-size: 0.85rem; }
+
+    /* Countdown */
+    .countdown-row { text-align: center; }
+    .countdown-label {
+      color: #9ca3af; font-size: 0.85rem; margin: 0 0 0.75rem 0;
+      text-transform: uppercase; letter-spacing: 2px; font-weight: 600;
+    }
+    .countdown-grid { display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; }
+    .countdown-box {
+      background: #1a1a1a; border: 1px solid #333; border-radius: 12px;
+      padding: 1rem 1.5rem; min-width: 80px; text-align: center;
+    }
+    .countdown-value {
+      display: block; font-size: 2rem; font-weight: 800; color: #d4af37;
+      font-variant-numeric: tabular-nums;
+    }
+    .countdown-unit {
+      display: block; font-size: 0.75rem; color: #6b7280; margin-top: 0.25rem;
+      text-transform: uppercase; letter-spacing: 1px;
+    }
+
+    /* Consequences */
+    .consequence-card {
+      background: #1a1111; border: 1px solid #7f1d1d; border-radius: 12px;
+      padding: 1.25rem 1.5rem; margin-bottom: 1rem;
+    }
+    .consequence-card strong { color: #fca5a5; }
+    .consequence-card span { color: #d1d5db; margin-left: 0.5rem; }
+
+    /* Partner journey */
+    .partner-journey-card {
+      background: #151515; border: 1px solid #2a2a2a; border-radius: 16px;
+      padding: 1.5rem; min-height: 220px;
+    }
+    .partner-journey-card svg { margin-bottom: 1rem; }
+    .partner-journey-card h3 { color: #f8fafc; margin: 0 0 0.5rem 0; font-size: 1.05rem; }
+    .partner-journey-card p { color: #9ca3af; margin: 0; font-size: 0.9rem; line-height: 1.6; }
+
+    /* FAQ */
+    .faq-item { border-bottom: 1px solid #333; }
+    .faq-question {
+      width: 100%; padding: 1.25rem 0; background: none; border: none;
+      color: #f0f0f0; font-size: 1.05rem; font-weight: 600; cursor: pointer;
+      display: flex; justify-content: space-between; align-items: center; text-align: left;
+    }
+    .faq-question svg { transition: transform 0.3s; flex-shrink: 0; }
+    .faq-question.open svg { transform: rotate(180deg); }
+    .faq-answer {
+      color: #9ca3af; margin: 0 0 1.25rem 0; line-height: 1.6; font-size: 0.95rem;
+      display: none;
+    }
+    .faq-answer.open { display: block; }
+
+    /* Registration Form */
+    .form-section {
+      padding: 5rem 0;
+      background: linear-gradient(180deg, #121212 0%, #0a0a0a 100%);
+    }
+    .form-card {
+      max-width: 480px; width: 100%; margin: 0 auto;
+      background: #1a1a1a; border: 1px solid #333; border-radius: 16px;
+      padding: 2rem; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    }
+    .form-card h3 { color: #f0f0f0; margin: 0 0 0.5rem 0; font-size: 1.25rem; font-weight: 700; }
+    .form-card .form-desc { color: #9ca3af; margin: 0 0 1.5rem 0; font-size: 0.9rem; }
+    .form-partner-note {
+      margin-bottom: 1.25rem; padding: 0.85rem 1rem; border-radius: 12px;
+      border: 1px solid rgba(34, 197, 94, 0.27); background: rgba(34, 197, 94, 0.07);
+    }
+    .form-partner-note p { color: #d1d5db; margin: 0; font-size: 0.84rem; line-height: 1.6; }
+    .form-partner-note strong { color: #d4af37; }
+    .form-fields { display: flex; flex-direction: column; gap: 1rem; }
+    .field-label {
+      display: block; color: #9ca3af; font-size: 0.8rem; font-weight: 600;
+      margin-bottom: 0.4rem;
+    }
+    .field-hint { color: #6b7280; margin: 0.3rem 0 0 0; font-size: 0.75rem; }
+    .field-row { display: flex; gap: 1rem; }
+    .field-row > div { flex: 1; }
+    .field-input {
+      width: 100%; padding: 0.9rem 1rem; border-radius: 10px; border: 1px solid #444;
+      background: #111; color: #f0f0f0; font-size: 0.95rem; outline: none;
+      box-sizing: border-box;
+    }
+    .field-input:focus { border-color: #d4af37; }
+    .field-input.mono { font-family: monospace; letter-spacing: 0.5px; }
+    .password-wrapper { position: relative; }
+    .password-wrapper input { padding-right: 3rem; }
+    .password-toggle {
+      position: absolute; right: 0.75rem; top: 50%; transform: translateY(-50%);
+      background: none; border: none; color: #6b7280; cursor: pointer;
+      font-size: 0.8rem; padding: 4px;
+    }
+    .form-error { color: #ef4444; margin: 1rem 0 0 0; font-size: 0.9rem; }
+    .form-submit {
+      width: 100%; padding: 1rem; border-radius: 10px; border: none;
+      background: #d4af37; color: #121212; font-weight: 700; font-size: 1.05rem;
+      cursor: pointer; transition: all 0.2s; margin-top: 1.5rem;
+    }
+    .form-submit:hover { background: #22c55e; transform: translateY(-1px); }
+    .form-submit:disabled { background: #555; color: #999; cursor: default; transform: none; }
+    .form-footer { color: #6b7280; margin: 0.75rem 0 0 0; font-size: 0.8rem; text-align: center; }
+    .form-footer a, .form-footer button {
+      background: none; border: none; color: #d4af37; cursor: pointer;
+      font-size: 0.8rem; padding: 0; text-decoration: underline;
+    }
+    .form-footer-sub { color: #4b5563; margin: 0.4rem 0 0 0; font-size: 0.7rem; text-align: center; }
+
+    /* Password Rules Box */
+    .pwd-rules {
+      margin-top: 0.5rem; padding: 0.85rem 1rem; border-radius: 12px;
+      border: 1px solid #374151; background: #111827;
+    }
+    .pwd-rules-title { color: #d1d5db; margin: 0 0 0.5rem; font-size: 0.82rem; font-weight: 700; }
+    .pwd-rules-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+    .pwd-rules-list li {
+      display: flex; align-items: center; gap: 6px; font-size: 0.8rem;
+    }
+    .pwd-rules-list li .icon { font-size: 0.7rem; }
+    .pwd-rule-neutral { color: #9ca3af; }
+    .pwd-rule-pass { color: #4ade80; }
+    .pwd-rule-fail { color: #f87171; }
+
+    /* Footer */
+    .footer {
+      padding: 2rem 0; border-top: 1px solid #222; background: #0a0a0a;
+    }
+    .footer-inner {
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 1rem;
+    }
+    .footer-left { display: flex; align-items: center; gap: 0.75rem; }
+    .footer-logo { height: 32px; width: auto; max-width: 140px; object-fit: contain; }
+    .footer-copy { color: #6b7280; font-size: 0.85rem; }
+    .footer-links { display: flex; gap: 1.5rem; }
+    .footer-link {
+      background: none; border: none; color: #6b7280; font-size: 0.85rem;
+      cursor: pointer; padding: 0;
+    }
+    .footer-link:hover { color: #d4af37; }
+    .footer-partner-note {
+      color: #9ca3af; font-size: 0.8rem; margin-top: 0.75rem; text-align: center; line-height: 1.6;
+    }
+    .footer-partner-note strong { color: #d4af37; }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .header { padding: 0 1rem; }
+      .header-inner { height: auto; padding: 0.75rem 0; }
+      .header-badge { display: none; }
+      .header-nav { gap: 0.25rem; }
+      .nav-link-subtle { display: none; }
+      .hero { padding-top: 100px; padding-bottom: 3rem; }
+      .hero-logo { height: 80px; }
+      .section { padding: 3rem 0; }
+      .field-row { flex-direction: column; }
+      .stats-bar { gap: 1.5rem; }
+      .tech-layout { flex-direction: column; }
+      .footer-inner { flex-direction: column; text-align: center; }
+      .footer-links { justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="header-logos">
+        <img id="header-logo" src="am-logo-branca.png" alt="AM Engenharia" class="header-logo" />
+        <button onclick="scrollToForm()" class="header-cta" id="header-cta-btn">Regularizar Agora</button>
+      </div>
+      <div class="header-right">
+        <span class="header-badge" id="header-badge">OBRIGATORIEDADE NR-1 - 2026</span>
+        <nav class="header-nav">
+          <button onclick="navigateToApp('/cliente')" class="nav-link">Ja sou cliente</button>
+          <button id="nav-parceiro" onclick="navigateToApp('/parceiro')" class="nav-link">Sou parceiro</button>
+          <button id="nav-admin" onclick="navigateToApp('/admin')" class="nav-link-subtle">Acesso AM</button>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="container">
+      <img id="hero-logo" src="am-logo-branca.png" alt="AM Engenharia" class="hero-logo" />
+      <h1 class="hero-title" id="hero-title">Novas Multas da NR-1: Regularize seu PGR e PCMSO Agora!</h1>
+      <p class="hero-subtitle" id="hero-subtitle">A partir de 26 de maio de 2026 comecam as fiscalizacoes e multas. Assista ao video e veja como adaptar sua empresa a NR-1 de forma rapida, acessivel e 100% digital.</p>
+
+      <div id="video-section" class="video-wrapper">
+        <div class="video-placeholder" id="video-placeholder">
+          <span>🎬</span>
+          <p id="video-placeholder-text">[INSIRA O VIDEO AQUI - COLE O IFRAME DO SEU VSL]</p>
+        </div>
+      </div>
+
+      <button onclick="scrollToForm()" class="cta-button" id="hero-cta-btn">🚀 QUERO REGULARIZAR MINHA EMPRESA AGORA</button>
+      <p style="color: #9ca3af; margin: 1rem 0 0 0; font-size: 0.9rem;" id="hero-sub-cta">🔒 Fale com um especialista e receba o diagnostico gratuito da sua empresa.</p>
+    </div>
+  </section>
+
+  <!-- PARTNER JOURNEY (hidden by default, shown for partner context) -->
+  <section id="partner-journey-section" class="section" style="display: none; padding: 3rem 0; background: #0b0b0b;">
+    <div class="container">
+      <div class="section-badge">COMO FUNCIONA</div>
+      <h2 class="section-title">Sua regularizacao em 3 passos simples</h2>
+      <p class="section-subtitle" id="partner-journey-subtitle"></p>
+      <div id="partner-journey-cards" class="card-grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));"></div>
+    </div>
+  </section>
+
+  <!-- URGENCY + COUNTDOWN -->
+  <section class="section" style="background: #0c0c0c;">
+    <div class="container">
+      <h2 class="section-title" id="urgency-title">O prazo de adaptacao esta acabando. Voce esta preparado?</h2>
+      <p style="color: #d1d5db; font-size: 1.05rem; line-height: 1.7; max-width: 800px; margin: 0 auto 2.5rem auto; text-align: center;" id="urgency-body"></p>
+
+      <div class="countdown-row">
+        <p class="countdown-label" id="countdown-label">Fiscalizacao oficial: 26 de maio de 2026</p>
+        <div class="countdown-grid">
+          <div class="countdown-box"><span class="countdown-value" id="cd-days">00</span><span class="countdown-unit">DIAS</span></div>
+          <div class="countdown-box"><span class="countdown-value" id="cd-hours">00</span><span class="countdown-unit">HORAS</span></div>
+          <div class="countdown-box"><span class="countdown-value" id="cd-minutes">00</span><span class="countdown-unit">MIN</span></div>
+          <div class="countdown-box"><span class="countdown-value" id="cd-seconds">00</span><span class="countdown-unit">SEG</span></div>
+        </div>
+      </div>
+
+      <div style="max-width: 800px; margin: 3rem auto 0 auto;">
+        <h3 style="color: #f0f0f0; font-size: 1.3rem; font-weight: 700; margin: 0 0 1rem 0; text-align: center;" id="consequences-title">O que isso significa para voce?</h3>
+        <p style="color: #d1d5db; line-height: 1.7; font-size: 0.95rem; margin: 0 0 1.5rem 0; text-align: center;" id="consequences-intro"></p>
+        <div id="consequences-list"></div>
+      </div>
+
+      <div class="anchor-badge" onclick="document.getElementById('section-solution').scrollIntoView({behavior:'smooth'})">📋 NOSSA SOLUCAO COMPLETA</div>
+    </div>
+  </section>
+
+  <!-- SOLUTION -->
+  <section id="section-solution" class="section">
+    <div class="container">
+      <div class="section-badge">📋 NOSSA SOLUCAO COMPLETA</div>
+      <h2 class="section-title" id="solution-title">Documentacao Profissional sem Burocracia para sua Empresa.</h2>
+      <p class="section-subtitle" id="solution-subtitle"></p>
+      <div id="solution-cards" class="card-grid" style="grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));"></div>
+      <div id="esocial-callout" class="esocial-callout" style="display: none;">
+        <span>✅</span>
+        <p id="esocial-text"></p>
+      </div>
+      <div class="anchor-badge" onclick="document.getElementById('section-technology').scrollIntoView({behavior:'smooth'})">💻 TECNOLOGIA EXCLUSIVA</div>
+    </div>
+  </section>
+
+  <!-- TECHNOLOGY -->
+  <section id="section-technology" class="section" style="background: #0c0c0c;">
+    <div class="container">
+      <div class="section-badge">💻 TECNOLOGIA EXCLUSIVA</div>
+      <h2 class="section-title" id="tech-title"></h2>
+      <p class="section-subtitle" id="tech-subtitle"></p>
+      <div class="tech-layout">
+        <div class="mockup-container">
+          <div id="tech-mockup" class="mockup-placeholder">
+            <span>📱</span>
+            <p style="color: #6b7280; margin: 0.75rem 0 0 0; font-size: 0.9rem;">Espaco para mockup / print do Portal AM Smart</p>
+          </div>
+        </div>
+        <div id="tech-features" class="features-list"></div>
+      </div>
+      <div class="anchor-badge" onclick="document.getElementById('section-audience').scrollIntoView({behavior:'smooth'})">🎯 PARA QUEM E?</div>
+    </div>
+  </section>
+
+  <!-- AUDIENCE -->
+  <section id="section-audience" class="section">
+    <div class="container">
+      <div class="section-badge">🎯 PARA QUEM E?</div>
+      <h2 class="section-title" id="audience-title"></h2>
+      <p class="section-subtitle" id="audience-subtitle"></p>
+      <div id="audience-cards" class="card-grid" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));"></div>
+      <div class="anchor-badge" id="authority-anchor" onclick="document.getElementById('section-authority').scrollIntoView({behavior:'smooth'})">🏆 POR QUE A AM ENGENHARIA?</div>
+    </div>
+  </section>
+
+  <!-- AUTHORITY -->
+  <section id="section-authority" class="section" style="background: #0c0c0c;">
+    <div class="container">
+      <div class="section-badge" id="authority-badge">🏆 POR QUE A AM ENGENHARIA?</div>
+      <h2 class="section-title" id="authority-title"></h2>
+      <p class="section-subtitle" id="authority-subtitle"></p>
+      <div id="authority-cards" class="card-grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); margin-bottom: 3rem;"></div>
+      <div id="authority-stats" class="stats-bar"></div>
+      <div class="anchor-badge" onclick="document.getElementById('section-cta').scrollIntoView({behavior:'smooth'})">🛡️ PROTEJA SEU NEGOCIO</div>
+    </div>
+  </section>
+
+  <!-- CTA + FORM -->
+  <section id="section-cta" class="form-section">
+    <div class="container">
+      <div class="section-badge">🛡️ PROTEJA SEU NEGOCIO</div>
+      <h2 class="section-title" id="cta-title" style="margin-bottom: 0.75rem;"></h2>
+      <p style="color: #d1d5db; font-size: 1.05rem; line-height: 1.7; max-width: 750px; margin: 0 auto 2rem; text-align: center;" id="cta-body"></p>
+      <div style="text-align: center; margin-bottom: 2.5rem;">
+        <button onclick="scrollToForm()" class="cta-button" id="cta-btn"></button>
+        <p style="color: #9ca3af; margin: 1rem 0 0 0; font-size: 0.9rem;" id="cta-sub-text"></p>
+      </div>
+
+      <div id="registration-form" class="form-card">
+        <h3 id="form-title">Cadastre-se para analisar sua empresa</h3>
+        <p class="form-desc" id="form-desc">Crie sua conta para acessar a analise regulatoria gratuita do seu CNPJ.</p>
+        <div id="form-partner-note" class="form-partner-note" style="display: none;">
+          <p></p>
+        </div>
+        <div class="form-fields">
+          <div>
+            <label class="field-label">Nome completo *</label>
+            <input type="text" id="reg-name" class="field-input" placeholder="Seu nome" />
+          </div>
+          <div>
+            <label class="field-label">E-mail *</label>
+            <input type="email" id="reg-email" class="field-input" placeholder="seu@email.com" />
+            <p class="field-hint">Este sera seu e-mail de acesso ao sistema</p>
+          </div>
+          <div class="field-row">
+            <div>
+              <label class="field-label">CPF *</label>
+              <input type="text" id="reg-cpf" class="field-input mono" placeholder="000.000.000-00" />
+            </div>
+            <div>
+              <label class="field-label">Telefone</label>
+              <input type="text" id="reg-phone" class="field-input mono" placeholder="(00) 00000-0000" />
+            </div>
+          </div>
+          <div>
+            <label class="field-label">Senha *</label>
+            <div class="password-wrapper">
+              <input type="password" id="reg-password" class="field-input" placeholder="Minimo 10 caracteres" />
+              <button type="button" class="password-toggle" onclick="togglePassword()">Mostrar</button>
+            </div>
+            <div id="pwd-rules" class="pwd-rules">
+              <p class="pwd-rules-title">Requisitos da senha:</p>
+              <ul class="pwd-rules-list">
+                <li class="pwd-rule-neutral"><span class="icon">○</span> Minimo de 10 caracteres</li>
+                <li class="pwd-rule-neutral"><span class="icon">○</span> Ao menos uma letra maiuscula (A-Z)</li>
+                <li class="pwd-rule-neutral"><span class="icon">○</span> Ao menos uma letra minuscula (a-z)</li>
+                <li class="pwd-rule-neutral"><span class="icon">○</span> Ao menos um numero (0-9)</li>
+                <li class="pwd-rule-neutral"><span class="icon">○</span> Ao menos um caractere especial (!@#$...)</li>
+              </ul>
+            </div>
+          </div>
+          <div>
+            <label class="field-label">Confirmar senha *</label>
+            <input type="password" id="reg-confirm" class="field-input" placeholder="Repita a senha" />
+          </div>
+        </div>
+        <p id="form-error" class="form-error" style="display: none;"></p>
+        <button id="form-submit-btn" class="form-submit" onclick="handleRegister()">Criar conta e analisar CNPJ</button>
+        <p class="form-footer">
+          Seus dados estao seguros. Ja tem conta?
+          <button onclick="navigateToApp('/cliente')">Faca login</button>
+        </p>
+        <p class="form-footer-sub" id="form-footer-sub">Ao se cadastrar, voce recebera um e-mail com seus dados de acesso. Estas credenciais serao as mesmas quando sua empresa se tornar cliente.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section" style="background: #0c0c0c;">
+    <div class="container" style="max-width: 720px;">
+      <h2 class="section-title" id="faq-title">Perguntas Frequentes</h2>
+      <div id="faq-list" style="margin-top: 2rem;"></div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-left">
+          <img src="am-logo-branca.png" alt="AM Engenharia" class="footer-logo" />
+          <span class="footer-copy">AM Engenharia &copy; 2026</span>
+        </div>
+        <div class="footer-links">
+          <button onclick="navigateToApp('/cliente')" class="footer-link">Acesso Cliente</button>
+          <button id="footer-parceiro" onclick="navigateToApp('/parceiro')" class="footer-link">Acesso Parceiro</button>
+          <button id="footer-admin" onclick="navigateToApp('/admin')" class="footer-link">Acesso AM</button>
+        </div>
+      </div>
+      <p id="footer-partner-note" class="footer-partner-note" style="display: none;"></p>
+    </div>
+  </footer>
+
+  <!-- SVG icon templates (hidden) -->
+  <div id="svg-templates" style="display: none;">
+    <svg id="svg-shield" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#d4af37" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+    <svg id="svg-file" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#d4af37" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>
+    <svg id="svg-clipboard" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#d4af37" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>
+    <svg id="svg-check-circle" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+    <svg id="svg-users" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#d4af37" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+    <svg id="svg-building" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#d4af37" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"/><path d="M9 22v-4h6v4"/><line x1="8" y1="6" x2="8" y2="6.01"/><line x1="12" y1="6" x2="12" y2="6.01"/><line x1="16" y1="6" x2="16" y2="6.01"/><line x1="8" y1="10" x2="8" y2="10.01"/><line x1="12" y1="10" x2="12" y2="10.01"/><line x1="16" y1="10" x2="16" y2="10.01"/><line x1="8" y1="14" x2="8" y2="14.01"/><line x1="12" y1="14" x2="12" y2="14.01"/><line x1="16" y1="14" x2="16" y2="14.01"/></svg>
+    <svg id="svg-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+  </div>
+
+  <script>
+    // ─── CONFIG ───
+    var CFG = window.__CONFIG || {};
+    var SUPABASE_URL = CFG.SUPABASE_URL || '';
+    var SUPABASE_ANON_KEY = CFG.SUPABASE_ANON_KEY || '';
+    var SST_APP_URL = CFG.SST_APP_URL || 'https://sst.amengenhariaseg.com.br';
+
+    var sb = null;
+    if (SUPABASE_URL && SUPABASE_ANON_KEY && window.supabase) {
+      sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    }
+
+    function navigateToApp(path) { window.location.href = SST_APP_URL + (path || ''); }
+    function scrollToForm() {
+      var el = document.getElementById('registration-form');
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // ─── DEFAULTS ───
+    var DEFAULTS = {
+      hero_headline: 'Novas Multas da NR-1: Regularize seu PGR e PCMSO Agora!',
+      hero_subheadline: 'A partir de 26 de maio de 2026 comecam as fiscalizacoes e multas. Assista ao video e veja como adaptar sua empresa a NR-1 de forma rapida, acessivel e 100% digital.',
+      show_video_section: true,
+      video_url: null,
+      video_placeholder_text: '[INSIRA O VIDEO AQUI - COLE O IFRAME DO SEU VSL]',
+      hero_cta_text: 'QUERO REGULARIZAR MINHA EMPRESA AGORA',
+      hero_sub_cta: 'Fale com um especialista e receba o diagnostico gratuito da sua empresa.',
+      countdown_date: '2026-05-26T00:00:00-03:00',
+      countdown_label: 'Fiscalizacao oficial: 26 de maio de 2026',
+      urgency_title: 'O prazo de adaptacao esta acabando. Voce esta preparado?',
+      urgency_body: 'A atualizacao da NR-1 trouxe uma mudanca profunda: agora, alem dos riscos fisicos, sua empresa e obrigada a incluir os riscos psicossociais (saude mental) no PGR (Programa de Gerenciamento de Riscos). O Ministerio do Trabalho (MTE) ja deu o aviso: a fiscalizacao rigorosa com aplicacao de multas comeca oficialmente em 26 de maio de 2026.',
+      urgency_consequences_title: 'O que isso significa para voce?',
+      urgency_consequences_intro: 'Nao e apenas "mais um papel". Se o seu PGR nao contemplar as novas regras, a fiscalizacao identifica a irregularidade e aplica multas.',
+      urgency_consequences_items: [
+        { label: 'Multas para pequenas empresas', text: 'Podem variar de R$ 15.000 a R$ 30.000 por infracao.' },
+        { label: 'Risco Juridico', text: 'Sem esses laudos, voce perde qualquer defesa em processos trabalhistas.' }
+      ],
+      solution_title: 'Documentacao Profissional sem Burocracia para sua Empresa.',
+      solution_subtitle: 'Nos cuidamos da complexidade tecnica para que voce foque no seu negocio. Entregamos a solucao completa exigida por lei, 100% adaptada as novas normas:',
+      solution_cards: [
+        { title: 'PGR', subtitle: 'Programa de Gerenciamento de Riscos', description: 'Identificacao completa de riscos fisicos, quimicos, biologicos e agora, os psicossociais.', signed_by: 'Assinado por Engenheiro de Seguranca' },
+        { title: 'PCMSO', subtitle: 'Programa de Controle Medico de Saude Ocupacional', description: 'O plano de exames medicos baseado nos riscos encontrados na sua empresa.', signed_by: 'Assinado por Medico do Trabalho' },
+        { title: 'DIR', subtitle: 'Declaracao de Inexistencia de Risco', description: 'Para empresas que se enquadram na NR-1 item 1.8.4 e nao possuem riscos ocupacionais relevantes.', signed_by: 'Assinado por Engenheiro de Seguranca' }
+      ],
+      solution_esocial_text: 'Tudo pronto para o eSocial: Geramos os arquivos necessarios para voce ficar em dia com o governo de forma transparente e rapida.',
+      show_technology_section: true,
+      technology_title: 'Controle tudo na palma da sua mao com o Portal AM Smart.',
+      technology_subtitle: 'Chega de pastas de arquivos pegando poeira. Ao contratar a AM Engenharia, voce ganha acesso exclusivo a nossa plataforma:',
+      technology_mockup_url: null,
+      technology_features: [
+        { title: 'Gestao Digital', description: 'Acesse laudos, certificados e treinamentos de qualquer lugar.' },
+        { title: 'Alertas de Vencimento', description: 'Nunca mais perca a data de renovacao de um laudo ou exame medico.' },
+        { title: 'Tecnologia Avancada', description: 'Resume laudos complexos em segundos para que voce saiba exatamente o que fazer.' }
+      ],
+      audience_title: 'Nao importa o tamanho, a lei e para todos.',
+      audience_subtitle: 'Se voce tem um ou mais colaboradores, voce e o alvo principal da fiscalizacao digital.',
+      audience_cards: [
+        { emoji: '🏢', title: 'Escritorios e Consultorios', description: 'Baixo risco, mas obrigatoriedade total de documentacao.' },
+        { emoji: '🛒', title: 'Comercios e Lojas', description: 'Varejo com fluxo de pessoas e colaboradores registrados.' },
+        { emoji: '🏭', title: 'Micro e Pequenas Industrias', description: 'Onde o risco e maior e a protecao precisa ser robusta.' },
+        { emoji: '🧑‍🔧', title: 'MEIs com Colaborador', description: 'Sim, voce tambem precisa estar regularizado para evitar multas.' }
+      ],
+      authority_title: 'Nao somos uma "fabrica de laudos". Somos uma autoridade nacional.',
+      authority_subtitle: 'Know-how tecnico que protege empresas do faturamento de R$ 100 mil ao R$ 100 milhoes.',
+      authority_cards: [
+        { emoji: '🏗️', title: 'Experiencia Comprovada', description: 'Gerenciamos a seguranca de grandes industrias com mais de 6.000 colaboradores.' },
+        { emoji: '🏅', title: 'Selo de Qualidade', description: 'Know-how tecnico que protege empresas de todos os portes e setores do Brasil.' },
+        { emoji: '🗺️', title: 'Presenca Nacional', description: 'Equipe tecnica pronta com o rigor que a lei exige e o preco que cabe no bolso.' }
+      ],
+      authority_stats: [
+        { value: '+6.000', label: 'Vidas protegidas em operacoes atendidas' },
+        { value: 'R$ 100mi+', label: 'Patrimonio protegido com nossos laudos' },
+        { value: '100% Digital', label: 'Documentos entregues online' }
+      ],
+      cta_title: 'Proteja seu patrimonio e durma tranquilo.',
+      cta_body: 'O custo da conformidade e infinitamente menor do que o preco de uma multa ou de um processo trabalhista. Nao deixe para a ultima hora - Maio de 2026 chega mais rapido do que voce imagina.',
+      cta_button_text: 'QUERO MEU ORCAMENTO E REGULARIZACAO AGORA',
+      cta_sub_text: 'Fale com um especialista e receba o diagnostico gratuito da sua empresa.',
+      faq_title: 'Perguntas Frequentes',
+      faq_items: [
+        { question: 'MEI precisa de PGR e PCMSO?', answer: 'MEI que nao possui empregados e exerce atividades de grau de risco 1 e 2 esta dispensado do PGR (NR-01.8.4). Nesse caso, emitimos a DIR (Declaracao de Inexistencia de Risco). Se o MEI tiver colaboradores registrados, a obrigatoriedade e total.' },
+        { question: 'Quanto tempo demora para ficar regularizado?', answer: 'Apos a contratacao, voce recebe acesso imediato ao sistema. O PGR e gerado de forma automatizada e revisado por nossa equipe tecnica. O prazo medio e de ate 5 dias uteis para entrega completa.' },
+        { question: 'Como recebo os arquivos e laudos?', answer: 'Todos os documentos ficam disponiveis no Portal AM Smart, nossa plataforma digital. Voce acessa de qualquer lugar, a qualquer momento, e pode baixar os PDFs assinados diretamente pelo sistema.' },
+        { question: 'Quais tipos de empresa voces atendem?', answer: 'Atendemos empresas de todos os portes e setores: escritorios, comercios, industrias, clinicas, MEIs com colaboradores e muito mais. Nosso sistema se adapta ao grau de risco e porte da sua empresa automaticamente.' }
+      ]
+    };
+
+    // ─── UTILITIES ───
+    function cleanDigits(v) { return String(v || '').replace(/\D/g, ''); }
+    function maskCPF(v) {
+      var d = cleanDigits(v).slice(0, 11);
+      return d.replace(/^(\d{3})(\d)/, '$1.$2').replace(/^(\d{3})\.(\d{3})(\d)/, '$1.$2.$3').replace(/\.(\d{3})(\d)/, '.$1-$2');
+    }
+    function maskPhone(v) {
+      var d = cleanDigits(v).slice(0, 11);
+      if (d.length <= 10) return d.replace(/^(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3');
+      return d.replace(/^(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3');
+    }
+
+    // UTM capture
+    var UTM_STORAGE_KEY = 'am_utm_params';
+    function captureUtmParams() {
+      try {
+        var params = new URLSearchParams(window.location.search);
+        var fromUrl = {}, has = false;
+        ['utm_source', 'utm_medium', 'utm_campaign'].forEach(function(k) {
+          var v = params.get(k);
+          if (v) { fromUrl[k] = v.trim().substring(0, 200); has = true; }
+        });
+        if (has) {
+          try { sessionStorage.setItem(UTM_STORAGE_KEY, JSON.stringify(fromUrl)); } catch(e) {}
+          return fromUrl;
+        }
+        try { var s = sessionStorage.getItem(UTM_STORAGE_KEY); if (s) return JSON.parse(s); } catch(e) {}
+        return {};
+      } catch(e) { return {}; }
+    }
+
+    // SVG helpers
+    var svgIcons = {
+      shield: '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#d4af37" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
+      file: '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#d4af37" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>',
+      clipboard: '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#d4af37" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>',
+      checkCircle: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>',
+      users: '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#d4af37" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
+      building: '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#d4af37" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"/><path d="M9 22v-4h6v4"/></svg>',
+      chevron: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>'
+    };
+    var solutionIconMap = [svgIcons.file, svgIcons.clipboard, svgIcons.shield];
+
+    // ─── PARTNER BRANDING ───
+    var partnerBranding = { ref: '', name: '', logo_url: '', logo_url_light: '' };
+    var isPartnerContext = false;
+
+    function readPartnerFromQuery() {
+      var p = new URLSearchParams(window.location.search);
+      return {
+        ref: p.get('ref') || '',
+        name: p.get('partner_name') || '',
+        logo_url: p.get('partner_logo') || '',
+        logo_url_light: p.get('partner_logo_light') || ''
+      };
+    }
+
+    async function loadPartnerBranding() {
+      var q = readPartnerFromQuery();
+      var ref = q.ref;
+      if (ref) {
+        try { sessionStorage.setItem('am_partner_ref', ref); } catch(e) {}
+      }
+
+      // Try cached branding
+      var cached = null;
+      try { var s = sessionStorage.getItem('am_partner_branding'); if (s) cached = JSON.parse(s); } catch(e) {}
+
+      // Fetch remote if we have ref but no name/logo from query
+      var remote = null;
+      if (ref && !(q.name || q.logo_url) && sb) {
+        try {
+          var res = await sb.rpc('get_partner_public_branding', { p_referral_code: ref.trim().toLowerCase() });
+          if (!res.error && res.data && res.data[0]) {
+            remote = {
+              ref: res.data[0].referral_code || ref,
+              name: res.data[0].partner_name || '',
+              logo_url: res.data[0].logo_url || '',
+              logo_url_light: res.data[0].logo_url_light || ''
+            };
+          }
+        } catch(e) { console.error('[SalesLP] Erro ao carregar branding:', e); }
+      }
+
+      var overrides = { ref: ref || q.ref };
+      if (q.name) overrides.name = q.name;
+      if (q.logo_url) overrides.logo_url = q.logo_url;
+      if (q.logo_url_light) overrides.logo_url_light = q.logo_url_light;
+
+      partnerBranding = Object.assign({}, partnerBranding, cached || {}, remote || {},
+        (ref || q.name || q.logo_url) ? overrides : {}
+      );
+      isPartnerContext = Boolean(partnerBranding.ref || partnerBranding.name);
+
+      if (partnerBranding.ref || partnerBranding.name || partnerBranding.logo_url) {
+        try { sessionStorage.setItem('am_partner_branding', JSON.stringify(partnerBranding)); } catch(e) {}
+      }
+    }
+
+    // ─── COUNTDOWN ───
+    var countdownTarget = new Date(DEFAULTS.countdown_date).getTime();
+    function tickCountdown() {
+      var diff = Math.max(0, countdownTarget - Date.now());
+      document.getElementById('cd-days').textContent = String(Math.floor(diff / 86400000)).padStart(2, '0');
+      document.getElementById('cd-hours').textContent = String(Math.floor((diff % 86400000) / 3600000)).padStart(2, '0');
+      document.getElementById('cd-minutes').textContent = String(Math.floor((diff % 3600000) / 60000)).padStart(2, '0');
+      document.getElementById('cd-seconds').textContent = String(Math.floor((diff % 60000) / 1000)).padStart(2, '0');
+    }
+
+    // ─── PASSWORD RULES ───
+    var pwdRules = [
+      { label: 'Minimo de 10 caracteres', test: function(v) { return v.length >= 10; } },
+      { label: 'Ao menos uma letra maiuscula (A-Z)', test: function(v) { return /[A-Z]/.test(v); } },
+      { label: 'Ao menos uma letra minuscula (a-z)', test: function(v) { return /[a-z]/.test(v); } },
+      { label: 'Ao menos um numero (0-9)', test: function(v) { return /\d/.test(v); } },
+      { label: 'Ao menos um caractere especial (!@#$...)', test: function(v) { return /[^A-Za-z0-9]/.test(v); } }
+    ];
+
+    function updatePasswordRules() {
+      var pwd = document.getElementById('reg-password').value;
+      var items = document.querySelectorAll('#pwd-rules .pwd-rules-list li');
+      pwdRules.forEach(function(rule, i) {
+        var li = items[i];
+        if (!li) return;
+        var passed = pwd.length > 0 && rule.test(pwd);
+        li.className = pwd.length === 0 ? 'pwd-rule-neutral' : (passed ? 'pwd-rule-pass' : 'pwd-rule-fail');
+        li.querySelector('.icon').textContent = pwd.length === 0 ? '○' : (passed ? '✓' : '✗');
+      });
+    }
+
+    function togglePassword() {
+      var inp = document.getElementById('reg-password');
+      var conf = document.getElementById('reg-confirm');
+      var btn = document.querySelector('.password-toggle');
+      var show = inp.type === 'password';
+      inp.type = show ? 'text' : 'password';
+      conf.type = show ? 'text' : 'password';
+      btn.textContent = show ? 'Ocultar' : 'Mostrar';
+    }
+
+    // ─── FORM INPUT MASKS ───
+    function setupInputMasks() {
+      document.getElementById('reg-cpf').addEventListener('input', function(e) { e.target.value = maskCPF(e.target.value); });
+      document.getElementById('reg-phone').addEventListener('input', function(e) { e.target.value = maskPhone(e.target.value); });
+      document.getElementById('reg-password').addEventListener('input', updatePasswordRules);
+    }
+
+    // ─── REGISTER ───
+    async function handleRegister() {
+      var name = document.getElementById('reg-name').value.trim();
+      var email = document.getElementById('reg-email').value.trim();
+      var cpfRaw = document.getElementById('reg-cpf').value;
+      var phoneRaw = document.getElementById('reg-phone').value;
+      var password = document.getElementById('reg-password').value;
+      var confirm = document.getElementById('reg-confirm').value;
+      var errorEl = document.getElementById('form-error');
+      var btn = document.getElementById('form-submit-btn');
+
+      function showError(msg) { errorEl.textContent = msg; errorEl.style.display = 'block'; }
+      function clearError() { errorEl.style.display = 'none'; }
+      clearError();
+
+      if (!name) { showError('Informe seu nome completo.'); return; }
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showError('Informe um e-mail valido.'); return; }
+      var cpf = cleanDigits(cpfRaw);
+      if (cpf.length !== 11) { showError('Informe um CPF valido com 11 digitos.'); return; }
+      if (!password || password.length < 10) { showError('A senha deve ter no minimo 10 caracteres.'); return; }
+      if (!/[a-z]/.test(password)) { showError('A senha deve incluir ao menos uma letra minuscula.'); return; }
+      if (!/[A-Z]/.test(password)) { showError('A senha deve incluir ao menos uma letra maiuscula.'); return; }
+      if (!/\d/.test(password)) { showError('A senha deve incluir ao menos um numero.'); return; }
+      if (!/[^A-Za-z0-9]/.test(password)) { showError('A senha deve incluir ao menos um caractere especial.'); return; }
+      if (password !== confirm) { showError('As senhas nao coincidem.'); return; }
+
+      if (!sb) { showError('Erro de configuracao. Tente recarregar a pagina.'); return; }
+
+      btn.disabled = true;
+      btn.textContent = 'Criando conta...';
+
+      try {
+        var partnerRef = null;
+        try { partnerRef = sessionStorage.getItem('am_partner_ref'); } catch(e) {}
+        var utmParams = captureUtmParams();
+
+        var body = {
+          name: name,
+          email: email.toLowerCase(),
+          password: password,
+          cpf: cpf,
+          phone: cleanDigits(phoneRaw) || undefined,
+          partner_ref: partnerRef || undefined,
+          utm_source: utmParams.utm_source || undefined,
+          utm_medium: utmParams.utm_medium || undefined,
+          utm_campaign: utmParams.utm_campaign || undefined
+        };
+
+        var res = await sb.functions.invoke('register-lead', { body: body });
+
+        if (res.error) {
+          var errMsg = '';
+          if (res.data && res.data.error) errMsg = res.data.error;
+          if (!errMsg) {
+            try { var b = await res.error.context.json(); if (b && b.error) errMsg = b.error; } catch(e) {}
+          }
+          showError(errMsg || 'Erro ao processar cadastro.');
+          return;
+        }
+
+        var data = res.data;
+        if (!data || !data.success) {
+          showError((data && data.error) || 'Erro ao criar conta.');
+          return;
+        }
+
+        navigateToApp('/cliente');
+      } catch(err) {
+        console.error('[SalesLP] Erro no cadastro:', err);
+        showError('Erro de conexao. Tente novamente.');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = isPartnerContext
+          ? 'Continuar com atendimento do parceiro'
+          : 'Criar conta e analisar CNPJ';
+      }
+    }
+
+    // ─── FAQ Render ───
+    function renderFAQ(items, containerId) {
+      var container = document.getElementById(containerId);
+      container.innerHTML = '';
+      (items || []).forEach(function(item) {
+        var div = document.createElement('div');
+        div.className = 'faq-item';
+        div.innerHTML = '<button class="faq-question" onclick="this.classList.toggle(\'open\'); this.nextElementSibling.classList.toggle(\'open\')">' +
+          '<span>' + escapeHtml(item.question) + '</span>' + svgIcons.chevron + '</button>' +
+          '<p class="faq-answer">' + escapeHtml(item.answer) + '</p>';
+        container.appendChild(div);
+      });
+    }
+
+    function escapeHtml(str) {
+      var div = document.createElement('div');
+      div.appendChild(document.createTextNode(str || ''));
+      return div.innerHTML;
+    }
+
+    // ─── RENDER CONFIG ───
+    function applyConfig(cfg) {
+      var c = Object.assign({}, DEFAULTS, cfg);
+      var pn = isPartnerContext ? (partnerBranding.name || 'Parceiro credenciado') : '';
+
+      // Header
+      if (isPartnerContext && partnerBranding.logo_url) {
+        document.getElementById('header-logo').src = partnerBranding.logo_url;
+        document.getElementById('header-logo').alt = pn;
+        document.getElementById('header-logo').className = 'header-partner-logo';
+      }
+      document.getElementById('header-cta-btn').textContent = isPartnerContext ? 'Falar com ' + pn : 'Regularizar Agora';
+      document.getElementById('header-badge').textContent = isPartnerContext ? 'Regularizacao NR-1' : 'OBRIGATORIEDADE NR-1 - 2026';
+
+      // Hide partner-only nav items in partner context
+      if (isPartnerContext) {
+        document.getElementById('nav-parceiro').style.display = 'none';
+        document.getElementById('nav-admin').style.display = 'none';
+        document.getElementById('footer-parceiro').style.display = 'none';
+        document.getElementById('footer-admin').style.display = 'none';
+      }
+
+      // Hero
+      var heroLogo = document.getElementById('hero-logo');
+      if (isPartnerContext && partnerBranding.logo_url) {
+        heroLogo.src = partnerBranding.logo_url;
+        heroLogo.alt = pn;
+      }
+      document.getElementById('hero-title').textContent = isPartnerContext
+        ? 'Regularize sua empresa na NR-1 com ' + pn
+        : c.hero_headline;
+      document.getElementById('hero-subtitle').textContent = isPartnerContext
+        ? pn + ' oferece a solucao completa de regularizacao NR-1: PGR, PCMSO, portal do cliente e entrega 100% digital.'
+        : c.hero_subheadline;
+
+      // Video
+      var videoSection = document.getElementById('video-section');
+      if (c.show_video_section === false) {
+        videoSection.style.display = 'none';
+      } else if (c.video_url) {
+        videoSection.innerHTML = '<iframe src="' + escapeHtml(c.video_url) + '" title="Video de apresentacao" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin" style="width:100%;height:100%;border:none;"></iframe>';
+      } else {
+        document.getElementById('video-placeholder-text').textContent = c.video_placeholder_text;
+      }
+
+      var ctaText = isPartnerContext ? 'QUERO REGULARIZAR COM ' + pn.toUpperCase() : c.hero_cta_text;
+      document.getElementById('hero-cta-btn').textContent = '🚀 ' + ctaText;
+      document.getElementById('hero-sub-cta').textContent = '🔒 ' + (isPartnerContext
+        ? 'Diagnostico regulatorio gratuito, processo 100% digital e documentos assinados entregues online.'
+        : c.hero_sub_cta);
+
+      // Partner journey
+      if (isPartnerContext) {
+        document.getElementById('partner-journey-section').style.display = '';
+        document.getElementById('partner-journey-subtitle').textContent = pn + ' cuida de todo o processo para voce. Do diagnostico a entrega dos documentos, tudo de forma rapida e digital.';
+        var pjCards = [
+          { icon: svgIcons.users, title: 'Atendimento por ' + pn, desc: 'Alinhamento de oferta, proposta comercial e acompanhamento personalizado do inicio ao fim.' },
+          { icon: svgIcons.building, title: 'Contratacao 100% digital', desc: 'Pagamento seguro, portal do cliente e acompanhamento de todo o processo online.' },
+          { icon: svgIcons.shield, title: 'Entrega tecnica validada', desc: 'PGR, PCMSO e documentos assinados digitalmente, prontos para fiscalizacao.' }
+        ];
+        var pjContainer = document.getElementById('partner-journey-cards');
+        pjContainer.innerHTML = '';
+        pjCards.forEach(function(card) {
+          pjContainer.innerHTML += '<div class="partner-journey-card">' + card.icon + '<h3>' + escapeHtml(card.title) + '</h3><p>' + escapeHtml(card.desc) + '</p></div>';
+        });
+      }
+
+      // Urgency
+      document.getElementById('urgency-title').textContent = c.urgency_title;
+      document.getElementById('urgency-body').textContent = c.urgency_body;
+      if (c.countdown_date) countdownTarget = new Date(c.countdown_date).getTime();
+      document.getElementById('countdown-label').textContent = c.countdown_label;
+      document.getElementById('consequences-title').textContent = c.urgency_consequences_title;
+      document.getElementById('consequences-intro').textContent = c.urgency_consequences_intro;
+      var cList = document.getElementById('consequences-list');
+      cList.innerHTML = '';
+      (c.urgency_consequences_items || []).forEach(function(item) {
+        cList.innerHTML += '<div class="consequence-card"><strong>' + escapeHtml(item.label) + ':</strong><span> ' + escapeHtml(item.text) + '</span></div>';
+      });
+
+      // Solution
+      document.getElementById('solution-title').textContent = c.solution_title;
+      document.getElementById('solution-subtitle').textContent = c.solution_subtitle;
+      var solContainer = document.getElementById('solution-cards');
+      solContainer.innerHTML = '';
+      (c.solution_cards || []).forEach(function(card, i) {
+        solContainer.innerHTML += '<div class="solution-card">' +
+          '<div class="solution-card-header">' + (solutionIconMap[i] || svgIcons.shield) +
+          '<h3 class="solution-card-title">' + escapeHtml(card.title) + '</h3></div>' +
+          '<p class="solution-card-subtitle">' + escapeHtml(card.subtitle) + '</p>' +
+          '<p class="solution-card-desc">' + escapeHtml(card.description) + '</p>' +
+          '<div class="solution-card-signed">' + svgIcons.checkCircle + ' ' + escapeHtml(card.signed_by) + '</div></div>';
+      });
+      if (c.solution_esocial_text) {
+        document.getElementById('esocial-callout').style.display = '';
+        document.getElementById('esocial-text').textContent = c.solution_esocial_text;
+      }
+
+      // Technology
+      var techSection = document.getElementById('section-technology');
+      if (c.show_technology_section === false) {
+        techSection.style.display = 'none';
+      } else {
+        document.getElementById('tech-title').textContent = isPartnerContext ? 'Portal exclusivo para clientes de ' + pn : c.technology_title;
+        document.getElementById('tech-subtitle').textContent = isPartnerContext
+          ? 'Acesse seus documentos, acompanhe o andamento e baixe seus PDFs assinados a qualquer momento pelo portal digital.'
+          : c.technology_subtitle;
+        if (c.technology_mockup_url) {
+          document.getElementById('tech-mockup').innerHTML = '<img src="' + escapeHtml(c.technology_mockup_url) + '" alt="Portal AM Smart" style="width:100%;border-radius:12px;" />';
+        }
+        var featContainer = document.getElementById('tech-features');
+        featContainer.innerHTML = '';
+        (c.technology_features || []).forEach(function(f) {
+          featContainer.innerHTML += '<div class="feature-item"><div class="feature-check">✓</div><div><h4>' + escapeHtml(f.title) + '</h4><p>' + escapeHtml(f.description) + '</p></div></div>';
+        });
+      }
+
+      // Audience
+      document.getElementById('audience-title').textContent = c.audience_title;
+      document.getElementById('audience-subtitle').textContent = c.audience_subtitle;
+      var audContainer = document.getElementById('audience-cards');
+      audContainer.innerHTML = '';
+      (c.audience_cards || []).forEach(function(card) {
+        audContainer.innerHTML += '<div class="card audience-card"><span class="emoji">' + escapeHtml(card.emoji) + '</span><h3>' + escapeHtml(card.title) + '</h3><p>' + escapeHtml(card.description) + '</p></div>';
+      });
+      document.getElementById('authority-anchor').textContent = isPartnerContext ? '🏆 POR QUE ' + pn.toUpperCase() + '?' : '🏆 POR QUE A AM ENGENHARIA?';
+
+      // Authority
+      document.getElementById('authority-badge').textContent = isPartnerContext ? '🏆 POR QUE ' + pn.toUpperCase() + '?' : '🏆 POR QUE A AM ENGENHARIA?';
+      document.getElementById('authority-title').textContent = isPartnerContext
+        ? 'Regularizacao NR-1 com estrutura profissional e entrega garantida'
+        : c.authority_title;
+      document.getElementById('authority-subtitle').textContent = isPartnerContext
+        ? pn + ' oferece uma solucao completa com tecnologia de ponta, equipe tecnica especializada e documentos validos para fiscalizacao.'
+        : c.authority_subtitle;
+      var authContainer = document.getElementById('authority-cards');
+      authContainer.innerHTML = '';
+      (c.authority_cards || []).forEach(function(card) {
+        authContainer.innerHTML += '<div class="card audience-card"><span class="emoji">' + escapeHtml(card.emoji) + '</span><h3>' + escapeHtml(card.title) + '</h3><p>' + escapeHtml(card.description) + '</p></div>';
+      });
+      var statsContainer = document.getElementById('authority-stats');
+      statsContainer.innerHTML = '';
+      (c.authority_stats || []).forEach(function(s) {
+        statsContainer.innerHTML += '<div class="stat-item"><p class="value">' + escapeHtml(s.value) + '</p><p class="label">' + escapeHtml(s.label) + '</p></div>';
+      });
+
+      // CTA
+      document.getElementById('cta-title').textContent = isPartnerContext
+        ? 'Regularize sua empresa agora com ' + pn : c.cta_title;
+      document.getElementById('cta-body').textContent = isPartnerContext
+        ? 'Preencha o formulario abaixo e receba o diagnostico regulatorio gratuito do seu CNPJ. ' + pn + ' acompanha todo o processo ate a entrega dos seus documentos.'
+        : c.cta_body;
+      document.getElementById('cta-btn').textContent = '🚀 ' + (isPartnerContext ? 'QUERO CONTINUAR COM ' + pn.toUpperCase() : c.cta_button_text);
+      document.getElementById('cta-sub-text').textContent = '🔒 ' + (isPartnerContext
+        ? 'Seus dados estao protegidos. Processo seguro, digital e sem burocracia.' : c.cta_sub_text);
+
+      // Form
+      if (isPartnerContext) {
+        document.getElementById('form-title').textContent = 'Solicite seu diagnostico com ' + (partnerBranding.name || 'o parceiro');
+        document.getElementById('form-desc').textContent = 'Preencha seus dados e receba a analise regulatoria inicial do seu CNPJ.';
+        var note = document.getElementById('form-partner-note');
+        note.style.display = '';
+        note.querySelector('p').innerHTML = 'Ao se cadastrar, voce recebera um diagnostico regulatorio completo e podera contratar a regularizacao diretamente com <strong>' + escapeHtml(partnerBranding.name || 'nosso time') + '</strong>.';
+        document.getElementById('form-submit-btn').textContent = 'Continuar com atendimento do parceiro';
+        document.getElementById('form-footer-sub').textContent = 'Seu cadastro abre a jornada comercial neste canal parceiro e sera aproveitado quando sua empresa avancar para a contratacao oficial.';
+      }
+
+      // FAQ
+      document.getElementById('faq-title').textContent = c.faq_title;
+      renderFAQ(c.faq_items, 'faq-list');
+
+      // Footer partner note
+      if (isPartnerContext) {
+        var fpn = document.getElementById('footer-partner-note');
+        fpn.style.display = '';
+        fpn.innerHTML = 'Operacao e responsabilidade tecnica: <strong>AM Engenharia</strong>. ' + escapeHtml(pn) + ' e parceiro comercial homologado.';
+      }
+    }
+
+    // ─── INIT ───
+    async function init() {
+      captureUtmParams();
+      setupInputMasks();
+
+      await loadPartnerBranding();
+
+      // Load config from Supabase
+      var dbConfig = {};
+      if (sb) {
+        try {
+          var res = await sb.from('sales_page_config').select('*').eq('singleton_key', true).single();
+          if (res.data) dbConfig = res.data;
+        } catch(e) { console.error('[SalesLP] Erro ao carregar config:', e); }
+      }
+
+      applyConfig(dbConfig);
+      tickCountdown();
+      setInterval(tickCountdown, 1000);
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
 </html>
