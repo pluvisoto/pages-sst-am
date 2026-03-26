@@ -744,6 +744,8 @@
         // Build notes
         var notesData = {
           __PARTNER_LEAD__: true,
+          city: city || undefined,
+          state: state || undefined,
           portfolio_size: portfolio || undefined,
           main_niches: niches || undefined,
           offers_sst: sst || undefined,
@@ -757,10 +759,8 @@
           cnpj: formattedCnpj,
           email: email.toLowerCase(),
           phone: maskPhone(phoneRaw),
-          city: city,
-          state: state,
           status: 'pending',
-          type: 'partner_interest',
+          request_type: 'partner',
           notes: JSON.stringify(notesData)
         });
 
