@@ -730,14 +730,41 @@
       try {
         var formattedCnpj = formatCNPJ(cnpjClean);
 
-        // Check duplicate CNPJ
+        // Check duplicate CNPJ (somente partner)
         var dupCheck = await sb.from('access_requests')
-          .select('id')
+          .select('id, email, contact_name, business_name')
+          .eq('request_type', 'partner')
           .or('cnpj.eq.' + cnpjClean + ',cnpj.eq.' + formattedCnpj)
           .in('status', ['pending', 'approved']);
 
         if (dupCheck.data && dupCheck.data.length > 0) {
-          showError('Ja existe uma solicitacao para este CNPJ. Caso precise de suporte, entre em contato com nossa equipe.');
+          // Ja tem solicitacao de parceiro - verificar se conta foi criada
+          var existingEmail = dupCheck.data[0].email || email.toLowerCase();
+          var checkAuth = await sb.auth.signInWithPassword({ email: existingEmail, password: '___probe_only___' });
+          // Se retornar "Invalid login credentials" = usuario existe (conta criada)
+          // Se retornar "Invalid login credentials" = pode ser que exista ou nao
+          // Melhor checar: se o email existe como auth user, a conta ja foi criada
+          var hasAccount = checkAuth.error && checkAuth.error.message && !checkAuth.error.message.includes('not confirmed');
+          // Abordagem mais segura: tentar OTP dry-run nao funciona com anon.
+          // Vamos checar se existe um partner record vinculado
+          var partnerCheck = await sb.from('partners')
+            .select('id')
+            .or('cnpj_clean.eq.' + cnpjClean + ',email.eq.' + existingEmail)
+            .limit(1);
+
+          if (partnerCheck.data && partnerCheck.data.length > 0) {
+            // Conta ja foi criada - parceiro ja existe
+            showError('Ja existe uma conta de parceiro para este CNPJ. Acesse com seu E-mail e senha em "Ja sou parceiro".');
+            return;
+          }
+
+          // Solicitacao existe mas conta NAO foi criada - redirecionar para criar senha
+          submittedData.email = existingEmail;
+          submittedData.fullName = dupCheck.data[0].contact_name || name;
+          submittedData.businessName = dupCheck.data[0].business_name || business;
+          submittedData.cnpj = formattedCnpj;
+          document.getElementById('pw-email').value = existingEmail;
+          showScreen('screen-password');
           return;
         }
 
