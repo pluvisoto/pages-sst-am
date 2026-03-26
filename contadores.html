@@ -774,7 +774,7 @@
         try {
           fetch(SUPABASE_URL + '/functions/v1/partner-signup-thank-you', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON_KEY },
+            headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY },
             body: JSON.stringify({ email: email.toLowerCase(), fullName: name, businessName: business })
           });
         } catch(e) { console.error('[Contadores] Erro notificacao:', e); }
@@ -824,7 +824,7 @@
       try {
         var res = await fetch(SUPABASE_URL + '/functions/v1/create-partner-account', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON_KEY },
+          headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY },
           body: JSON.stringify({
             email: submittedData.email,
             password: password,
