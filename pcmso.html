@@ -1,0 +1,1585 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PCMSO Avulso | AM Engenharia</title>
+  <meta name="description" content="Contrate o PCMSO avulso para sua empresa. Analise automatica de PGR com IA. Pagamento por PIX, boleto ou cartao." />
+  <meta name="theme-color" content="#0a0a0a" />
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <script src="env.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: #0a0a0a; color: #f0f0f0; min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; text-decoration: none; }
+    button { font-family: inherit; }
+    input, select, textarea { font-family: inherit; }
+
+    /* Header */
+    .header {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: rgba(10,10,10,0.85); backdrop-filter: blur(12px);
+      border-bottom: 1px solid #222; padding: 0 2rem;
+    }
+    .header-inner {
+      max-width: 900px; margin: 0 auto;
+      display: flex; justify-content: space-between; align-items: center; height: 64px;
+    }
+    .header-left { display: flex; align-items: center; gap: 12px; }
+    .header-logo { height: 36px; width: auto; }
+    .header-badge { color: #d4af37; font-weight: 700; font-size: 1rem; }
+    .header-link { color: #9ca3af; font-size: 0.85rem; text-decoration: none; }
+
+    /* Main */
+    .main { padding-top: 96px; padding-bottom: 3rem; max-width: 900px; margin: 0 auto; padding-left: 1.5rem; padding-right: 1.5rem; }
+
+    /* Card */
+    .card {
+      background: #1a1a1a; border: 1px solid #333; border-radius: 16px;
+      padding: 2rem; box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    }
+
+    /* Form elements */
+    .label { display: block; color: #9ca3af; font-size: 0.85rem; margin-bottom: 6px; font-weight: 500; }
+    .input {
+      width: 100%; padding: 0.85rem 1rem; border-radius: 10px;
+      border: 1px solid #444; background: #111; color: #f0f0f0;
+      font-size: 1rem; outline: none; box-sizing: border-box;
+    }
+    .input:focus { border-color: #d4af37; }
+
+    /* Buttons */
+    .btn-primary {
+      padding: 1rem 2rem; border-radius: 10px; border: none;
+      background: #d4af37; color: #121212; font-weight: 700; font-size: 1rem;
+      cursor: pointer; transition: all 0.2s; display: inline-flex;
+      align-items: center; gap: 8px;
+    }
+    .btn-primary:hover { background: #e5c54a; }
+    .btn-primary:disabled { background: #4b5563; color: #9ca3af; cursor: default; }
+    .btn-secondary {
+      padding: 0.85rem 1.5rem; border-radius: 10px; border: 1px solid #444;
+      background: transparent; color: #d1d5db; font-weight: 600; font-size: 0.95rem;
+      cursor: pointer; transition: all 0.2s;
+    }
+
+    /* Step badge */
+    .step-badge {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 32px; height: 32px; border-radius: 50%;
+      background: #d4af37; color: #121212; font-weight: 700; font-size: 0.85rem; flex-shrink: 0;
+    }
+
+    /* Info boxes */
+    .error-box {
+      background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3);
+      border-radius: 10px; padding: 1rem; color: #fca5a5; font-size: 0.9rem;
+    }
+    .success-box {
+      background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3);
+      border-radius: 10px; padding: 1rem; color: #86efac; font-size: 0.9rem;
+    }
+    .gold-box {
+      background: rgba(212,175,55,0.08); border: 1px solid rgba(212,175,55,0.25);
+      border-radius: 12px; padding: 1.25rem;
+    }
+    .dark-box {
+      background: #111; border-radius: 12px; padding: 1.25rem;
+      border: 1px solid #2a2a2a;
+    }
+
+    /* Grid */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    @media (max-width: 640px) { .grid-2 { grid-template-columns: 1fr; } }
+
+    /* Hero section */
+    .hero-section { text-align: center; margin-bottom: 2.5rem; }
+    .hero-tag {
+      display: inline-flex; align-items: center; gap: 10px; margin-bottom: 1rem;
+    }
+    .hero-tag-text {
+      color: #d4af37; font-weight: 700; font-size: 0.85rem;
+      text-transform: uppercase; letter-spacing: 1px;
+    }
+    .hero-title {
+      font-size: 2.2rem; font-weight: 800; color: #fff;
+      margin: 0 0 0.75rem 0; line-height: 1.2;
+    }
+    .hero-subtitle {
+      color: #9ca3af; font-size: 1.1rem; max-width: 600px;
+      margin: 0 auto; line-height: 1.6;
+    }
+
+    /* Marketing sections */
+    .section-marketing { margin-bottom: 3rem; }
+    .section-title { color: #d4af37; font-size: 1.4rem; font-weight: 800; margin-bottom: 1rem; }
+    .section-subtitle { color: #9ca3af; font-size: 1rem; margin-bottom: 1.5rem; line-height: 1.6; }
+    .section-body { color: #d1d5db; font-size: 0.95rem; line-height: 1.7; margin-bottom: 1.5rem; }
+
+    /* Feature list */
+    .feature-item { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 0.75rem; }
+    .feature-emoji { font-size: 1.3rem; flex-shrink: 0; margin-top: 2px; }
+    .feature-text { color: #d1d5db; font-size: 0.95rem; line-height: 1.5; }
+
+    /* Consequence cards */
+    .consequence-card {
+      background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 12px;
+      padding: 1.25rem; margin-bottom: 0.75rem;
+    }
+    .consequence-label { color: #d4af37; font-weight: 700; font-size: 0.9rem; margin-bottom: 4px; }
+    .consequence-text { color: #9ca3af; font-size: 0.85rem; line-height: 1.5; }
+
+    /* Process steps */
+    .process-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem;
+    }
+    .process-step { display: flex; gap: 12px; align-items: flex-start; }
+    .process-step-title { color: #e5e7eb; font-weight: 600; margin: 0 0 4px 0; font-size: 0.9rem; }
+    .process-step-desc { color: #6b7280; margin: 0; font-size: 0.8rem; line-height: 1.4; }
+
+    /* Authority cards */
+    .authority-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .authority-card {
+      background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 12px; padding: 1.25rem;
+    }
+    .authority-card-emoji { font-size: 1.5rem; margin-bottom: 0.5rem; }
+    .authority-card-title { color: #e5e7eb; font-weight: 700; font-size: 0.95rem; margin-bottom: 0.5rem; }
+    .authority-card-desc { color: #9ca3af; font-size: 0.85rem; line-height: 1.5; }
+
+    /* Stats */
+    .stats-row { display: flex; justify-content: center; gap: 3rem; flex-wrap: wrap; }
+    .stat-item { text-align: center; }
+    .stat-value { color: #d4af37; font-size: 1.75rem; font-weight: 800; }
+    .stat-label { color: #9ca3af; font-size: 0.85rem; margin-top: 4px; }
+
+    /* CTA section */
+    .cta-section {
+      text-align: center; padding: 3rem 2rem;
+      background: linear-gradient(180deg, #111 0%, #0a0a0a 100%);
+      border-radius: 16px; border: 1px solid #2a2a2a;
+    }
+    .cta-title { font-size: 1.5rem; font-weight: 800; color: #fff; margin-bottom: 0.75rem; }
+    .cta-body { color: #9ca3af; font-size: 1rem; margin-bottom: 1.5rem; line-height: 1.6; max-width: 500px; margin-left: auto; margin-right: auto; }
+    .cta-sub { color: #6b7280; font-size: 0.85rem; margin-top: 0.75rem; }
+
+    /* FAQ */
+    .faq-item { border-bottom: 1px solid #2a2a2a; }
+    .faq-question {
+      width: 100%; background: none; border: none; color: #e5e7eb;
+      font-size: 0.95rem; font-weight: 600; padding: 1.25rem 0;
+      cursor: pointer; text-align: left; display: flex;
+      justify-content: space-between; align-items: center;
+    }
+    .faq-arrow { color: #d4af37; font-size: 1.2rem; transition: transform 0.2s; }
+    .faq-answer {
+      color: #9ca3af; font-size: 0.9rem; line-height: 1.6;
+      padding: 0 0 1.25rem 0; display: none;
+    }
+    .faq-item.open .faq-answer { display: block; }
+    .faq-item.open .faq-arrow { transform: rotate(180deg); }
+
+    /* Payment method buttons */
+    .pay-method-btn {
+      flex: 1; padding: 0.85rem 0.5rem; border-radius: 10px;
+      border: 1px solid #333; background: #111; color: #d1d5db;
+      cursor: pointer; transition: all 0.2s; text-align: center;
+    }
+    .pay-method-btn.active {
+      border: 2px solid #d4af37; background: rgba(212,175,55,0.08); color: #d4af37;
+    }
+    .pay-method-label { display: block; font-weight: 600; font-size: 0.95rem; }
+    .pay-method-sub { display: block; font-size: 0.7rem; margin-top: 3px; color: #6b7280; }
+    .pay-method-btn.active .pay-method-sub { color: #6b7280; }
+
+    /* Offer cards */
+    .offer-card {
+      border: 1px solid #333; border-radius: 12px; padding: 1.25rem;
+      cursor: pointer; background: #111; transition: all 0.2s;
+    }
+    .offer-card.selected { border: 2px solid #d4af37; background: rgba(212,175,55,0.08); }
+    .offer-card-secondary.selected { border: 2px solid #6b7280; background: rgba(107,114,128,0.08); }
+
+    /* Upload area */
+    .upload-area {
+      border: 2px dashed #444; border-radius: 12px; padding: 2.5rem 2rem;
+      text-align: center; cursor: pointer; transition: all 0.2s;
+    }
+    .upload-area.has-file { background: rgba(212,175,55,0.05); border-color: #d4af37; }
+
+    /* Spinner animation */
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    .spinner { animation: spin 1s linear infinite; display: inline-block; }
+
+    /* Hidden */
+    .hidden { display: none !important; }
+
+    /* Video */
+    .video-wrapper {
+      max-width: 740px; margin: 0 auto 2.5rem auto; aspect-ratio: 16 / 9;
+      border-radius: 16px; overflow: hidden; border: 1px solid #333; background: #111;
+    }
+    .video-wrapper iframe { width: 100%; height: 100%; border: none; }
+    .video-placeholder {
+      width: 100%; height: 100%; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; background: #111; min-height: 200px;
+    }
+    .video-placeholder span { font-size: 3rem; }
+    .video-placeholder p { color: #6b7280; margin: 1rem 0 0 0; font-size: 0.95rem; }
+
+    /* Footer */
+    .footer {
+      text-align: center; padding: 2rem 0; color: #4b5563; font-size: 0.8rem;
+      border-top: 1px solid #1a1a1a; margin-top: 3rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-inner">
+      <div class="header-left">
+        <img src="am-logo-branca.png" alt="AM Engenharia" class="header-logo" />
+        <span class="header-badge">PCMSO Avulso</span>
+      </div>
+      <a href="https://wa.me/5519971515665?text=Ol%C3%A1%2C%20preciso%20de%20consultoria%20especializada%20em%20SST" target="_blank" rel="noopener noreferrer" class="header-link">Duvidas? Fale conosco</a>
+    </div>
+  </div>
+
+  <div class="main" id="page-top">
+
+    <!-- ============================================================= -->
+    <!-- MARKETING SECTIONS (populated from DB)                         -->
+    <!-- ============================================================= -->
+
+    <!-- Hero -->
+    <div id="section-hero" class="hero-section">
+      <div class="hero-tag">
+        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" style="stroke:#d4af37"/></svg>
+        <span class="hero-tag-text">Saude e Seguranca do Trabalho</span>
+      </div>
+      <h1 class="hero-title" id="hero-headline"></h1>
+      <p class="hero-subtitle" id="hero-subheadline"></p>
+    </div>
+
+    <!-- Video -->
+    <div id="section-video" class="hidden" style="margin-bottom:2.5rem;">
+      <div class="video-wrapper">
+        <div id="video-content"></div>
+      </div>
+    </div>
+
+    <!-- Hero CTA -->
+    <div id="section-hero-cta" style="text-align:center; margin-bottom:3rem;">
+      <button class="btn-primary" onclick="goToCheckout()" style="font-size:1.1rem; padding:1rem 2.5rem;" id="hero-cta-btn"></button>
+      <p style="color:#6b7280; font-size:0.85rem; margin-top:0.75rem;" id="hero-sub-cta"></p>
+    </div>
+
+    <!-- Process -->
+    <div id="section-process" class="section-marketing">
+      <div class="card" style="margin-bottom:2rem;">
+        <h3 style="color:#d4af37; font-size:1rem; font-weight:700; margin-bottom:1.25rem;" id="process-title"></h3>
+        <div class="process-grid" id="process-steps"></div>
+      </div>
+    </div>
+
+    <!-- Urgency -->
+    <div id="section-urgency" class="section-marketing">
+      <h2 class="section-title" id="urgency-title"></h2>
+      <p class="section-body" id="urgency-body"></p>
+      <h3 style="color:#e5e7eb; font-size:1.1rem; font-weight:700; margin-bottom:1rem;" id="urgency-consequences-title"></h3>
+      <div id="urgency-consequences"></div>
+    </div>
+
+    <!-- Solution -->
+    <div id="section-solution" class="section-marketing">
+      <h2 class="section-title" id="solution-title"></h2>
+      <p class="section-subtitle" id="solution-subtitle"></p>
+      <p class="section-body" id="solution-description"></p>
+      <div id="solution-features"></div>
+    </div>
+
+    <!-- Authority -->
+    <div id="section-authority" class="section-marketing">
+      <h2 class="section-title" id="authority-title"></h2>
+      <p class="section-subtitle" id="authority-subtitle"></p>
+      <div class="authority-grid" id="authority-cards"></div>
+      <div class="stats-row" id="authority-stats"></div>
+    </div>
+
+    <!-- CTA Final -->
+    <div id="section-cta" class="section-marketing">
+      <div class="cta-section">
+        <h2 class="cta-title" id="cta-title"></h2>
+        <p class="cta-body" id="cta-body"></p>
+        <button class="btn-primary" onclick="goToCheckout()" style="font-size:1.1rem; padding:1rem 2.5rem;" id="cta-btn"></button>
+        <p class="cta-sub" id="cta-sub-text"></p>
+      </div>
+    </div>
+
+    <!-- FAQ -->
+    <div id="section-faq" class="section-marketing">
+      <h2 class="section-title" style="text-align:center; margin-bottom:1.5rem;">Perguntas Frequentes</h2>
+      <div class="card" style="padding:0 2rem;">
+        <div id="faq-list"></div>
+      </div>
+    </div>
+
+    <!-- ============================================================= -->
+    <!-- CHECKOUT FLOW (steps 1-5)                                      -->
+    <!-- ============================================================= -->
+
+    <!-- STEP 1 - Contato -->
+    <div id="step-1" class="hidden">
+      <div class="card">
+        <h3 style="color:#fff; font-size:1.15rem; font-weight:700; margin-bottom:1.25rem;">Dados de contato</h3>
+        <div class="grid-2">
+          <div style="grid-column:1/-1;">
+            <label class="label">Nome completo *</label>
+            <input class="input" id="contact-name" placeholder="Seu nome" />
+          </div>
+          <div>
+            <label class="label">E-mail *</label>
+            <input class="input" id="contact-email" type="email" placeholder="seu@email.com" />
+          </div>
+          <div>
+            <label class="label">Telefone</label>
+            <input class="input" id="contact-phone" placeholder="(00) 00000-0000" />
+          </div>
+          <div style="grid-column:1/-1;">
+            <label class="label">CPF *</label>
+            <input class="input" id="contact-cpf" placeholder="000.000.000-00" />
+          </div>
+        </div>
+        <div style="margin-top:1.5rem; text-align:right;">
+          <button class="btn-primary" id="btn-step1" disabled onclick="goStep(2)">Continuar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 2 - CNPJ -->
+    <div id="step-2" class="hidden">
+      <div class="card">
+        <div style="margin-bottom:1.5rem;">
+          <button onclick="goStep(1)" style="background:none; border:none; color:#9ca3af; cursor:pointer; padding:0; font-size:0.9rem;">&#8592; Voltar</button>
+        </div>
+        <h3 style="color:#fff; font-size:1.15rem; font-weight:700; margin-bottom:1.25rem;">Dados da empresa</h3>
+        <div style="display:flex; gap:0.75rem; margin-bottom:1rem;">
+          <input class="input" id="cnpj-input" style="flex:1; font-family:monospace; letter-spacing:0.5px;" placeholder="00.000.000/0000-00" />
+          <button class="btn-primary" id="btn-analyze" onclick="handleAnalyzeCnpj()">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            Analisar
+          </button>
+        </div>
+        <div id="cnpj-error" class="error-box hidden" style="margin-bottom:1rem;"></div>
+        <div id="company-data" class="hidden">
+          <div class="dark-box" style="margin-bottom:1.25rem;">
+            <div class="grid-2" id="company-grid"></div>
+          </div>
+          <div style="margin-bottom:1.25rem;">
+            <label class="label">Numero de colaboradores *</label>
+            <input class="input" id="employee-count" type="number" min="1" step="1" placeholder="Ex: 15" style="font-size:1.1rem; font-weight:600;" />
+          </div>
+          <div id="price-preview" class="gold-box hidden" style="margin-bottom:1.25rem;"></div>
+          <div style="text-align:right;">
+            <button class="btn-primary" id="btn-step2" disabled onclick="goStep(3)">Continuar para envio do PGR</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 3 - Upload PGR -->
+    <div id="step-3" class="hidden">
+      <div class="card">
+        <div style="margin-bottom:1.5rem;">
+          <button onclick="goStep(2)" style="background:none; border:none; color:#9ca3af; cursor:pointer; padding:0; font-size:0.9rem;">&#8592; Voltar</button>
+        </div>
+
+        <!-- Upload form -->
+        <div id="pgr-upload-form">
+          <h3 style="color:#fff; font-size:1.15rem; font-weight:700; margin-bottom:0.5rem;">Envie o PGR da empresa</h3>
+          <p style="color:#9ca3af; font-size:0.9rem; margin-bottom:1.25rem;">Nosso sistema analisa a integridade do seu PGR com inteligencia artificial antes de gerar o PCMSO.</p>
+          <div class="upload-area" id="upload-area" onclick="document.getElementById('file-input').click()">
+            <input type="file" id="file-input" accept="application/pdf" style="display:none;" />
+            <div id="upload-placeholder">
+              <svg width="40" height="40" fill="none" stroke="#6b7280" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              <p style="color:#d1d5db; font-weight:600; margin:8px 0 4px 0;">Arraste o PDF do PGR aqui</p>
+              <p style="color:#6b7280; font-size:0.85rem;">ou clique para selecionar (max. 25 MB)</p>
+            </div>
+            <div id="upload-file-info" class="hidden">
+              <svg width="20" height="20" fill="none" stroke="#d4af37" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              <p style="color:#d1d5db; font-weight:600; margin:8px 0 4px 0;" id="file-name"></p>
+              <p style="color:#6b7280; font-size:0.8rem;" id="file-size"></p>
+            </div>
+          </div>
+          <div id="pgr-error" class="error-box hidden" style="margin-top:1rem;"></div>
+          <div id="btn-analyze-pgr-wrap" class="hidden" style="margin-top:1.25rem; text-align:right;">
+            <button class="btn-primary" id="btn-analyze-pgr" onclick="handleUploadAndAnalyze()">
+              <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              Analisar PGR
+            </button>
+          </div>
+        </div>
+
+        <!-- Uploading state -->
+        <div id="pgr-uploading" class="hidden" style="text-align:center; padding:3rem 2rem;">
+          <div style="color:#d4af37; margin-bottom:1rem;">
+            <svg class="spinner" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+          </div>
+          <p style="color:#d1d5db; font-weight:600; font-size:1.1rem; margin:0 0 8px 0;">Analisando integridade do PGR com IA...</p>
+          <p style="color:#6b7280; font-size:0.85rem;">Isso pode levar de 30 segundos a 2 minutos</p>
+        </div>
+
+        <!-- Analysis result -->
+        <div id="pgr-result" class="hidden"></div>
+      </div>
+    </div>
+
+    <!-- STEP 4 - Checkout -->
+    <div id="step-4" class="hidden">
+      <div class="card">
+        <div style="margin-bottom:1.5rem;">
+          <button onclick="goStep(3)" style="background:none; border:none; color:#9ca3af; cursor:pointer; padding:0; font-size:0.9rem;">&#8592; Voltar</button>
+        </div>
+        <h3 style="color:#fff; font-size:1.15rem; font-weight:700; margin-bottom:1.25rem;">Resumo e pagamento</h3>
+        <div id="checkout-summary" class="dark-box" style="margin-bottom:1.5rem;"></div>
+
+        <p style="color:#9ca3af; font-size:0.85rem; margin-bottom:0.75rem; font-weight:600;">Forma de pagamento</p>
+        <div style="display:flex; gap:0.6rem; margin-bottom:1.25rem;">
+          <button class="pay-method-btn active" id="pay-pix" onclick="selectPayMethod('PIX')">
+            <span class="pay-method-label">Pix</span>
+            <span class="pay-method-sub">Aprovacao imediata</span>
+          </button>
+          <button class="pay-method-btn" id="pay-boleto" onclick="selectPayMethod('BOLETO')">
+            <span class="pay-method-label">Boleto</span>
+            <span class="pay-method-sub">Ate 3 dias uteis</span>
+          </button>
+          <button class="pay-method-btn" id="pay-cc" onclick="selectPayMethod('CREDIT_CARD')">
+            <span class="pay-method-label">Cartao</span>
+            <span class="pay-method-sub" id="cc-interest-label">Parcelamento</span>
+          </button>
+        </div>
+
+        <div id="cc-installments" class="hidden" style="margin-bottom:1.25rem;">
+          <label class="label">Parcelamento no cartao</label>
+          <select class="input" id="installment-select" style="cursor:pointer;" onchange="onInstallmentChange()"></select>
+          <div id="cc-info" style="margin-top:8px; display:flex; justify-content:space-between; color:#6b7280; font-size:0.8rem;"></div>
+          <p id="cc-loading" class="hidden" style="color:#6b7280; font-size:0.8rem; margin-top:6px;">Calculando parcelas...</p>
+        </div>
+
+        <div id="checkout-error" class="error-box hidden" style="margin-bottom:1rem;"></div>
+
+        <button class="btn-primary" id="btn-checkout" onclick="handleSubmitPayment()" style="width:100%; justify-content:center;"></button>
+      </div>
+    </div>
+
+    <!-- STEP 5 - Payment -->
+    <div id="step-5" class="hidden">
+      <div class="card">
+        <div id="payment-confirmed" class="hidden" style="text-align:center;"></div>
+        <div id="payment-pending"></div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      &copy; 2026 AM Engenharia. Todos os direitos reservados.
+    </div>
+  </div>
+
+  <script>
+    // =========================================================================
+    // CONFIG
+    // =========================================================================
+    var CFG = window.__CONFIG || {};
+    var SUPABASE_URL = CFG.SUPABASE_URL || '';
+    var SUPABASE_ANON_KEY = CFG.SUPABASE_ANON_KEY || '';
+    var SST_APP_URL = CFG.SST_APP_URL || 'https://sst.amengenhariaseg.com.br';
+    var MESES_CONTRATO = 12;
+    var MAX_INSTALLMENTS = 12;
+    var MAX_FILE_SIZE = 25 * 1024 * 1024;
+
+    var sb = null;
+    if (SUPABASE_URL && SUPABASE_ANON_KEY && window.supabase) {
+      sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    }
+
+    // =========================================================================
+    // STATE
+    // =========================================================================
+    var state = {
+      step: 0, // 0=marketing, 1=contato, 2=cnpj, 3=pgr, 4=checkout, 5=pagamento
+      company: null,
+      analysis: null,
+      pricing: null,
+      pcmsoPrice: null,
+      bundlePrice: null,
+      parsedCount: 0,
+      pgrFile: null,
+      pgrResult: null,
+      leadId: null,
+      selectedOffer: null,
+      billingType: 'PIX',
+      installmentCount: MAX_INSTALLMENTS,
+      cardSimulation: null,
+      paymentResult: null,
+      paymentConfirmed: false,
+      pollingInterval: null,
+    };
+
+    // =========================================================================
+    // FORMATTERS
+    // =========================================================================
+    function cleanDigits(v) { return (v || '').replace(/\D/g, ''); }
+
+    function formatCurrency(v) {
+      var n = Number(v);
+      if (isNaN(n)) return 'R$ 0,00';
+      return n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    }
+
+    function formatPercentWithDecimals(v, dec) {
+      var n = Number(v);
+      if (isNaN(n)) return '0%';
+      return n.toLocaleString('pt-BR', { minimumFractionDigits: dec || 2, maximumFractionDigits: dec || 2 }) + '%';
+    }
+
+    function formatCNPJ(v) {
+      var d = cleanDigits(v);
+      if (d.length !== 14) return v;
+      return d.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, '$1.$2.$3/$4-$5');
+    }
+
+    function maskCNPJ(v) {
+      var d = cleanDigits(v).slice(0, 14);
+      if (d.length <= 2) return d;
+      if (d.length <= 5) return d.slice(0,2) + '.' + d.slice(2);
+      if (d.length <= 8) return d.slice(0,2) + '.' + d.slice(2,5) + '.' + d.slice(5);
+      if (d.length <= 12) return d.slice(0,2) + '.' + d.slice(2,5) + '.' + d.slice(5,8) + '/' + d.slice(8);
+      return d.slice(0,2) + '.' + d.slice(2,5) + '.' + d.slice(5,8) + '/' + d.slice(8,12) + '-' + d.slice(12);
+    }
+
+    function maskCPF(v) {
+      var d = cleanDigits(v).slice(0, 11);
+      if (d.length <= 3) return d;
+      if (d.length <= 6) return d.slice(0,3) + '.' + d.slice(3);
+      if (d.length <= 9) return d.slice(0,3) + '.' + d.slice(3,6) + '.' + d.slice(6);
+      return d.slice(0,3) + '.' + d.slice(3,6) + '.' + d.slice(6,9) + '-' + d.slice(9);
+    }
+
+    function maskPhone(v) {
+      var d = cleanDigits(v).slice(0, 11);
+      if (d.length <= 2) return d.length ? '(' + d : '';
+      if (d.length <= 7) return '(' + d.slice(0,2) + ') ' + d.slice(2);
+      return '(' + d.slice(0,2) + ') ' + d.slice(2,7) + '-' + d.slice(7);
+    }
+
+    function roundCurrency(v) { return Math.round(v * 100) / 100; }
+
+    // =========================================================================
+    // PRICING CALCULATIONS
+    // =========================================================================
+    function calcularPcmsoAvulso(opts) {
+      var count = Math.max(1, Math.round(Number(opts.employeeCount) || 1));
+      var baseRate = Math.max(0, Number(opts.valorBaseCapita) || 7);
+      var minPlan = Math.max(1, Math.round(Number(opts.limitePlanoMinimo) || 30));
+      var extraRate = Math.max(0, Number(opts.valorExtraCapita) || 14);
+      var base = roundCurrency(minPlan * baseRate);
+      var excedente = roundCurrency(Math.max(count - minPlan, 0) * extraRate);
+      return { total: roundCurrency(base + excedente), base: base, excedente: excedente, employeeCount: count };
+    }
+
+    function calcularMensalidadePerCapita(opts) {
+      var count = Math.max(1, Math.round(Number(opts.employeeCount) || 1));
+      var baseRate = Math.max(0, Number(opts.valorBaseCapita) || 10);
+      var minPlan = Math.max(1, Math.round(Number(opts.limitePlanoMinimo) || 30));
+      var extraRate = Math.max(0, Number(opts.valorExtraCapita) || 20);
+      var base = roundCurrency(minPlan * baseRate);
+      var excedente = roundCurrency(Math.max(count - minPlan, 0) * extraRate);
+      return { total: roundCurrency(base + excedente), base: base, excedente: excedente, employeeCount: count };
+    }
+
+    // =========================================================================
+    // NR-04 RISK DEGREE (simplified)
+    // =========================================================================
+    // This is a simplified version. The full NR-04 table is in the React app.
+    // For the public page, we rely on the data from ReceitaWS/BrasilAPI
+    // and the analyze-pgr-preview edge function handles the full logic.
+
+    // =========================================================================
+    // COMPANY LOOKUP
+    // =========================================================================
+    async function fetchCompanyData(cnpj) {
+      var clean = cleanDigits(cnpj);
+
+      // Try ReceitaWS first
+      try {
+        var res = await fetch('https://receitaws.com.br/v1/cnpj/' + clean, {
+          headers: { 'Accept': 'application/json' }
+        });
+        if (res.ok) {
+          var d = await res.json();
+          if (d && d.cnpj && d.status !== 'ERROR') {
+            return {
+              cnpj: cleanDigits(d.cnpj),
+              nome: d.nome || d.fantasia || '',
+              razao_social: d.nome || '',
+              fantasia: d.fantasia || '',
+              porte: d.porte || '',
+              cnae_fiscal: d.atividade_principal?.[0]?.code?.replace(/[^0-9]/g, '') || '',
+              cnae_fiscal_descricao: d.atividade_principal?.[0]?.text || '',
+              cnaes_secundarios: (d.atividades_secundarias || []).map(function(a) {
+                return { code: (a.code || '').replace(/[^0-9]/g, ''), text: a.text || '' };
+              }),
+              logradouro: d.logradouro || '',
+              numero: d.numero || '',
+              complemento: d.complemento || '',
+              bairro: d.bairro || '',
+              municipio: d.municipio || '',
+              uf: d.uf || '',
+              cep: d.cep || '',
+              telefone: d.telefone || '',
+              email: d.email || '',
+              situacao: d.situacao || '',
+              natureza_juridica: d.natureza_juridica || '',
+              qsa: d.qsa || [],
+            };
+          }
+        }
+      } catch (e) {
+        console.warn('[PCMSO] ReceitaWS falhou:', e);
+      }
+
+      // Fallback: BrasilAPI
+      try {
+        var res2 = await fetch('https://brasilapi.com.br/api/cnpj/v1/' + clean);
+        if (res2.ok) {
+          var b = await res2.json();
+          if (b && b.cnpj) {
+            return {
+              cnpj: cleanDigits(b.cnpj),
+              nome: b.razao_social || b.nome_fantasia || '',
+              razao_social: b.razao_social || '',
+              fantasia: b.nome_fantasia || '',
+              porte: b.porte || b.descricao_porte || '',
+              cnae_fiscal: String(b.cnae_fiscal || ''),
+              cnae_fiscal_descricao: b.cnae_fiscal_descricao || '',
+              cnaes_secundarios: (b.cnaes_secundarios || []).map(function(a) {
+                return { code: String(a.codigo || ''), text: a.descricao || '' };
+              }),
+              logradouro: b.logradouro || b.descricao_tipo_de_logradouro || '',
+              numero: b.numero || '',
+              complemento: b.complemento || '',
+              bairro: b.bairro || '',
+              municipio: b.municipio || b.descricao_municipio || '',
+              uf: b.uf || '',
+              cep: b.cep || '',
+              telefone: b.ddd_telefone_1 || '',
+              email: b.email || '',
+              situacao: b.descricao_situacao_cadastral || '',
+              natureza_juridica: b.natureza_juridica || '',
+              qsa: b.qsa || [],
+            };
+          }
+        }
+      } catch (e2) {
+        console.warn('[PCMSO] BrasilAPI falhou:', e2);
+      }
+
+      return null;
+    }
+
+    // =========================================================================
+    // LOAD PRICING
+    // =========================================================================
+    async function loadPricing() {
+      if (!sb) return;
+      try {
+        var res = await sb.rpc('get_public_pricing');
+        if (res.data && res.data.length > 0) {
+          state.pricing = res.data[0];
+        }
+      } catch (e) {
+        console.error('[PCMSO] Erro ao carregar pricing:', e);
+      }
+    }
+
+    // =========================================================================
+    // EDGE FUNCTION HELPERS
+    // =========================================================================
+    async function extractFunctionError(result, fallback) {
+      if (!result || !result.error) return null;
+      try {
+        var body = result.error.context && result.error.context.json ? await result.error.context.json() : null;
+        if (body && body.error) return body.error;
+      } catch (e) {
+        console.error('[PCMSO] Erro ao extrair resposta:', e);
+      }
+      if (result.data && result.data.error) return result.data.error;
+      if (result.error.message) return result.error.message;
+      return fallback;
+    }
+
+    async function simulateCreditCardInstallments(price, installmentCount) {
+      var result = await sb.functions.invoke('asaas-checkout', {
+        body: { action: 'simulate', billing_type: 'CREDIT_CARD', price: price, installment_count: installmentCount }
+      });
+      var err = await extractFunctionError(result, 'Nao foi possivel simular as parcelas.');
+      if (err) throw new Error(err);
+      if (!result.data || !result.data.success) throw new Error((result.data && result.data.error) || 'Erro na simulacao.');
+      return result.data;
+    }
+
+    async function syncPaymentStatus(paymentId) {
+      var result = await sb.functions.invoke('asaas-checkout', {
+        body: { action: 'sync_status', payment_id: paymentId }
+      });
+      var err = await extractFunctionError(result, 'Erro ao verificar status.');
+      if (err) throw new Error(err);
+      if (!result.data || !result.data.success) throw new Error((result.data && result.data.error) || 'Erro no status.');
+      return result.data;
+    }
+
+    function buildInstallmentFallback(price, count) {
+      var n = roundCurrency(price);
+      var c = Math.min(Math.max(Number(count) || 1, 1), MAX_INSTALLMENTS);
+      return {
+        success: true, billing_type: 'CREDIT_CARD', base_value: n,
+        total_value: n, installment_count: c,
+        installment_value: roundCurrency(n / c), monthly_interest_rate: 0, simulated: false
+      };
+    }
+
+    // =========================================================================
+    // NAVIGATION
+    // =========================================================================
+    function goToCheckout() {
+      showStep(1);
+    }
+
+    function goStep(n) {
+      showStep(n);
+    }
+
+    function showStep(n) {
+      state.step = n;
+      // Hide marketing if going to checkout
+      var marketing = ['section-hero', 'section-video', 'section-hero-cta', 'section-process', 'section-urgency', 'section-solution', 'section-authority', 'section-cta', 'section-faq'];
+      marketing.forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el) el.classList.toggle('hidden', n > 0);
+      });
+
+      for (var i = 1; i <= 5; i++) {
+        var el = document.getElementById('step-' + i);
+        if (el) el.classList.toggle('hidden', i !== n);
+      }
+
+      // Scroll to top
+      var top = document.getElementById('page-top');
+      if (top) top.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // =========================================================================
+    // INPUT MASKS
+    // =========================================================================
+    function setupInputMasks() {
+      var phone = document.getElementById('contact-phone');
+      if (phone) phone.addEventListener('input', function() { this.value = maskPhone(this.value); });
+
+      var cpf = document.getElementById('contact-cpf');
+      if (cpf) cpf.addEventListener('input', function() { this.value = maskCPF(this.value); });
+
+      var cnpjInput = document.getElementById('cnpj-input');
+      if (cnpjInput) {
+        cnpjInput.addEventListener('input', function() { this.value = maskCNPJ(this.value); });
+        cnpjInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') handleAnalyzeCnpj(); });
+      }
+
+      var empCount = document.getElementById('employee-count');
+      if (empCount) empCount.addEventListener('input', function() { recalcPrice(); });
+
+      // File input
+      var fileInput = document.getElementById('file-input');
+      if (fileInput) fileInput.addEventListener('change', function() { handleFileSelect(this.files && this.files[0]); });
+
+      // Drag and drop
+      var uploadArea = document.getElementById('upload-area');
+      if (uploadArea) {
+        uploadArea.addEventListener('dragover', function(e) { e.preventDefault(); e.stopPropagation(); });
+        uploadArea.addEventListener('drop', function(e) {
+          e.preventDefault(); e.stopPropagation();
+          var files = e.dataTransfer && e.dataTransfer.files;
+          if (files && files[0]) handleFileSelect(files[0]);
+        });
+      }
+
+      // Step 1 validation
+      ['contact-name', 'contact-email', 'contact-cpf'].forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el) el.addEventListener('input', validateStep1);
+      });
+    }
+
+    function validateStep1() {
+      var name = (document.getElementById('contact-name').value || '').trim();
+      var email = (document.getElementById('contact-email').value || '').trim();
+      var cpf = cleanDigits(document.getElementById('contact-cpf').value || '');
+      var valid = name.length >= 3 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) && cpf.length === 11;
+      document.getElementById('btn-step1').disabled = !valid;
+    }
+
+    // =========================================================================
+    // STEP 2 - CNPJ
+    // =========================================================================
+    async function handleAnalyzeCnpj() {
+      var cnpjVal = cleanDigits(document.getElementById('cnpj-input').value);
+      if (cnpjVal.length !== 14) {
+        showError('cnpj-error', 'Informe um CNPJ valido com 14 digitos.');
+        return;
+      }
+
+      hideError('cnpj-error');
+      document.getElementById('company-data').classList.add('hidden');
+      document.getElementById('btn-analyze').disabled = true;
+      document.getElementById('btn-analyze').textContent = 'Analisando...';
+
+      try {
+        var company = await fetchCompanyData(cnpjVal);
+        if (!company) {
+          showError('cnpj-error', 'Nao foi possivel consultar este CNPJ. Verifique e tente novamente.');
+          return;
+        }
+
+        state.company = company;
+
+        // Render company data
+        var grid = document.getElementById('company-grid');
+        grid.innerHTML = renderInfoItem('Razao Social', company.razao_social || company.nome)
+          + renderInfoItem('CNPJ', formatCNPJ(company.cnpj || cnpjVal))
+          + renderInfoItem('CNAE', (company.cnae_fiscal || '-') + ' - ' + (company.cnae_fiscal_descricao || '-'))
+          + renderInfoItem('Grau de Risco', '-')
+          + renderInfoItem('Municipio', (company.municipio || '-') + ' / ' + (company.uf || '-'))
+          + renderInfoItem('Porte', company.porte || '-');
+
+        document.getElementById('company-data').classList.remove('hidden');
+        document.getElementById('employee-count').value = '';
+        state.pcmsoPrice = null;
+        document.getElementById('price-preview').classList.add('hidden');
+        document.getElementById('btn-step2').disabled = true;
+      } catch (err) {
+        console.error('[PCMSO] Erro na analise CNPJ:', err);
+        showError('cnpj-error', 'Falha ao consultar dados da empresa. Tente novamente.');
+      } finally {
+        document.getElementById('btn-analyze').disabled = false;
+        document.getElementById('btn-analyze').innerHTML = '<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Analisar';
+      }
+    }
+
+    function renderInfoItem(label, value) {
+      return '<div>'
+        + '<span style="color:#6b7280; font-size:0.75rem; text-transform:uppercase; letter-spacing:0.5px;">' + label + '</span>'
+        + '<p style="color:#d1d5db; margin:2px 0 0 0; font-size:0.88rem; line-height:1.4;">' + (value || '-') + '</p>'
+        + '</div>';
+    }
+
+    function recalcPrice() {
+      var countStr = document.getElementById('employee-count').value;
+      var count = Math.max(1, Math.round(Number(countStr) || 0));
+      state.parsedCount = count;
+
+      if (!state.pricing || !countStr || count < 1) {
+        document.getElementById('price-preview').classList.add('hidden');
+        document.getElementById('btn-step2').disabled = true;
+        state.pcmsoPrice = null;
+        return;
+      }
+
+      var p = state.pricing;
+      var result = calcularPcmsoAvulso({
+        employeeCount: count,
+        valorBaseCapita: Number(p.pcmso_avulso_base_capita) || 7,
+        limitePlanoMinimo: Number(p.pcmso_avulso_limite_minimo) || 30,
+        valorExtraCapita: Number(p.pcmso_avulso_extra_capita) || 14,
+      });
+      state.pcmsoPrice = roundCurrency(result.total);
+
+      var bundleResult = calcularMensalidadePerCapita({
+        employeeCount: count,
+        valorBaseCapita: Number(p.valor_base_capita) || 10,
+        limitePlanoMinimo: Number(p.limite_plano_minimo) || 30,
+        valorExtraCapita: Number(p.valor_extra_capita) || 20,
+      });
+      state.bundlePrice = roundCurrency(bundleResult.total * MESES_CONTRATO);
+
+      var preview = document.getElementById('price-preview');
+      preview.innerHTML = '<div style="display:flex; justify-content:space-between; align-items:center;">'
+        + '<div><p style="color:#d4af37; font-weight:700; font-size:0.9rem; margin:0;">PCMSO Avulso</p>'
+        + '<p style="color:#9ca3af; font-size:0.8rem; margin:2px 0 0 0;">' + count + ' colaborador' + (count !== 1 ? 'es' : '') + '</p></div>'
+        + '<span style="color:#d4af37; font-weight:800; font-size:1.5rem;">' + formatCurrency(state.pcmsoPrice) + '</span>'
+        + '</div>';
+      preview.classList.remove('hidden');
+      document.getElementById('btn-step2').disabled = !(state.company && count >= 1 && state.pcmsoPrice > 0);
+    }
+
+    // =========================================================================
+    // STEP 3 - PGR UPLOAD
+    // =========================================================================
+    function handleFileSelect(file) {
+      hideError('pgr-error');
+      if (!file) return;
+      if (file.type !== 'application/pdf') { showError('pgr-error', 'Apenas arquivos PDF sao aceitos.'); return; }
+      if (file.size > MAX_FILE_SIZE) { showError('pgr-error', 'Arquivo muito grande. Tamanho maximo: 25 MB.'); return; }
+
+      state.pgrFile = file;
+      document.getElementById('upload-placeholder').classList.add('hidden');
+      document.getElementById('upload-file-info').classList.remove('hidden');
+      document.getElementById('file-name').textContent = file.name;
+      document.getElementById('file-size').textContent = (file.size / 1024 / 1024).toFixed(1) + ' MB - Clique para trocar';
+      document.getElementById('upload-area').classList.add('has-file');
+      document.getElementById('btn-analyze-pgr-wrap').classList.remove('hidden');
+    }
+
+    async function handleUploadAndAnalyze() {
+      if (!state.pgrFile || !state.company) return;
+
+      document.getElementById('pgr-upload-form').classList.add('hidden');
+      document.getElementById('pgr-uploading').classList.remove('hidden');
+      document.getElementById('pgr-result').classList.add('hidden');
+      hideError('pgr-error');
+
+      try {
+        // Convert to base64
+        var arrayBuffer = await state.pgrFile.arrayBuffer();
+        var bytes = new Uint8Array(arrayBuffer);
+        var base64 = '';
+        var CHUNK = 8192;
+        for (var i = 0; i < bytes.length; i += CHUNK) {
+          var chunk = bytes.subarray(i, Math.min(i + CHUNK, bytes.length));
+          base64 += btoa(String.fromCharCode.apply(null, chunk));
+        }
+
+        var cnpjVal = cleanDigits(document.getElementById('cnpj-input').value);
+        var result = await sb.functions.invoke('analyze-pgr-preview', {
+          body: {
+            contact: {
+              name: document.getElementById('contact-name').value.trim(),
+              email: document.getElementById('contact-email').value.trim(),
+              phone: cleanDigits(document.getElementById('contact-phone').value),
+              cpf: cleanDigits(document.getElementById('contact-cpf').value),
+            },
+            company_data: {
+              razao_social: state.company.razao_social || state.company.nome || '',
+              cnpj: cleanDigits(state.company.cnpj || cnpjVal),
+              cnae_code: String(state.company.cnae_fiscal || ''),
+              cnae_description: state.company.cnae_fiscal_descricao || '',
+              grau_risco: null,
+              porte: state.company.porte || '',
+              numero_colaboradores: state.parsedCount,
+              cidade: state.company.municipio || '',
+              uf: state.company.uf || '',
+            },
+            employee_count: state.parsedCount,
+            file_base64: base64,
+            file_name: state.pgrFile.name,
+          }
+        });
+
+        var errorMsg = await extractFunctionError(result, 'Erro ao analisar PGR.');
+        if (errorMsg) { showPgrError(errorMsg); return; }
+        if (!result.data || !result.data.success) { showPgrError((result.data && result.data.error) || 'Erro ao analisar PGR.'); return; }
+
+        var data = result.data.data;
+        state.pgrResult = data;
+        state.leadId = data.lead_id;
+
+        renderPgrResult(data);
+      } catch (err) {
+        console.error('[PCMSO] Erro no upload/analise PGR:', err);
+        showPgrError('Falha de conexao ao analisar PGR. Tente novamente.');
+      }
+    }
+
+    function showPgrError(msg) {
+      document.getElementById('pgr-uploading').classList.add('hidden');
+      document.getElementById('pgr-upload-form').classList.remove('hidden');
+      showError('pgr-error', msg);
+    }
+
+    function renderPgrResult(data) {
+      document.getElementById('pgr-uploading').classList.add('hidden');
+      var container = document.getElementById('pgr-result');
+      container.classList.remove('hidden');
+
+      var resumo = (data.analysis_report && data.analysis_report.resumo) || {};
+      var inconsistencias = (data.analysis_report && data.analysis_report.inconsistencias) || [];
+      var integrityOk = data.pgr_integrity_ok === true;
+      var criticas = inconsistencias.filter(function(i) { return i.severidade === 'CRITICA'; });
+      var alertas = inconsistencias.filter(function(i) { return i.severidade === 'ALERTA'; });
+
+      var html = '';
+
+      if (integrityOk) {
+        // PGR approved
+        html += '<div style="background:rgba(34,197,94,0.08); border:1px solid rgba(34,197,94,0.3); border-radius:12px; padding:1.5rem; margin-bottom:1.5rem;">';
+        html += '<div style="display:flex; align-items:center; gap:12px; margin-bottom:0.75rem;">';
+        html += '<svg width="20" height="20" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>';
+        html += '<h3 style="color:#22c55e; margin:0; font-size:1.15rem; font-weight:700;">PGR Aprovado</h3>';
+        html += '<span style="background:rgba(34,197,94,0.2); color:#86efac; padding:2px 10px; border-radius:999px; font-size:0.8rem; font-weight:600;">Nota ' + (resumo.nota_geral || 0) + '/100</span>';
+        html += '</div>';
+        html += '<p style="color:#a7f3d0; margin:0; font-size:0.9rem; line-height:1.5;">' + (resumo.parecer || 'Seu PGR esta em conformidade e pode ser utilizado como base para a elaboracao do PCMSO.') + '</p>';
+        html += '</div>';
+
+        // Price
+        html += '<div class="gold-box" style="margin-bottom:1.5rem;">';
+        html += '<div style="display:flex; justify-content:space-between; align-items:center;">';
+        html += '<div><p style="color:#d4af37; font-weight:700; margin:0;">PCMSO Avulso</p>';
+        html += '<p style="color:#9ca3af; font-size:0.8rem; margin:2px 0 0 0;">' + state.parsedCount + ' colaborador' + (state.parsedCount !== 1 ? 'es' : '') + '</p></div>';
+        html += '<span style="color:#d4af37; font-weight:800; font-size:1.5rem;">' + formatCurrency(state.pcmsoPrice) + '</span>';
+        html += '</div></div>';
+
+        html += '<div style="text-align:right;">';
+        html += '<button class="btn-primary" onclick="selectOfferAndGo(\'PCMSO_ONLY\')">Prosseguir para pagamento</button>';
+        html += '</div>';
+      } else {
+        // PGR with issues
+        html += '<div style="background:rgba(245,158,11,0.08); border:1px solid rgba(245,158,11,0.3); border-radius:12px; padding:1.5rem; margin-bottom:1.5rem;">';
+        html += '<div style="display:flex; align-items:center; gap:12px; margin-bottom:0.75rem;">';
+        html += '<svg width="20" height="20" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>';
+        html += '<h3 style="color:#f59e0b; margin:0; font-size:1.15rem; font-weight:700;">Inconsistencias encontradas</h3>';
+        html += '<span style="background:rgba(245,158,11,0.2); color:#fcd34d; padding:2px 10px; border-radius:999px; font-size:0.8rem; font-weight:600;">Nota ' + (resumo.nota_geral || 0) + '/100</span>';
+        html += '</div>';
+        html += '<p style="color:#fde68a; margin:0; font-size:0.9rem; line-height:1.5; margin-bottom:1rem;">' + (resumo.parecer || 'Identificamos pontos de atencao no seu PGR que podem impactar a qualidade do PCMSO.') + '</p>';
+
+        // Critical issues
+        if (criticas.length > 0) {
+          html += '<p style="color:#ef4444; font-weight:600; font-size:0.85rem; margin:0 0 6px 0;">Problemas criticos (' + criticas.length + ')</p>';
+          criticas.forEach(function(inc) {
+            html += '<div style="background:rgba(239,68,68,0.1); border-radius:8px; padding:0.75rem; margin-bottom:6px; border:1px solid rgba(239,68,68,0.2);">';
+            html += '<p style="color:#fca5a5; font-weight:600; font-size:0.85rem; margin:0 0 4px 0;">' + (inc.titulo || '') + '</p>';
+            html += '<p style="color:#9ca3af; font-size:0.8rem; margin:0; line-height:1.4;">' + (inc.descricao || '') + '</p>';
+            if (inc.impacto_pcmso) html += '<p style="color:#6b7280; font-size:0.75rem; margin:4px 0 0 0; font-style:italic;">Impacto no PCMSO: ' + inc.impacto_pcmso + '</p>';
+            html += '</div>';
+          });
+        }
+
+        // Alerts
+        if (alertas.length > 0) {
+          html += '<p style="color:#f59e0b; font-weight:600; font-size:0.85rem; margin:0.75rem 0 6px 0;">Alertas (' + alertas.length + ')</p>';
+          alertas.slice(0, 3).forEach(function(inc) {
+            html += '<div style="background:rgba(245,158,11,0.08); border-radius:8px; padding:0.75rem; margin-bottom:6px; border:1px solid rgba(245,158,11,0.15);">';
+            html += '<p style="color:#fcd34d; font-weight:600; font-size:0.85rem; margin:0 0 4px 0;">' + (inc.titulo || '') + '</p>';
+            html += '<p style="color:#9ca3af; font-size:0.8rem; margin:0; line-height:1.4;">' + (inc.descricao || '') + '</p>';
+            html += '</div>';
+          });
+          if (alertas.length > 3) {
+            html += '<p style="color:#6b7280; font-size:0.8rem; margin:4px 0 0 0;">e mais ' + (alertas.length - 3) + ' alerta' + (alertas.length - 3 > 1 ? 's' : '') + '...</p>';
+          }
+        }
+        html += '</div>';
+
+        // Explanation
+        html += '<div class="dark-box" style="margin-bottom:1.5rem;">';
+        html += '<p style="color:#d1d5db; font-size:0.9rem; margin:0; line-height:1.6;">Um PGR com inconsistencias pode gerar problemas em fiscalizacoes e comprometer a adequacao do PCMSO. Voce pode optar por contratar um PGR correto junto com o PCMSO, ou continuar apenas com o PCMSO usando o PGR atual.</p>';
+        html += '</div>';
+
+        // Offer cards
+        html += '<div class="grid-2" style="margin-bottom:1.5rem;">';
+        // PGR+PCMSO
+        html += '<div class="offer-card" id="offer-pgr-pcmso" onclick="selectOffer(\'PGR_PCMSO\')">';
+        html += '<p style="color:#d4af37; font-weight:700; font-size:0.95rem; margin:0 0 6px 0;">PGR + PCMSO</p>';
+        html += '<p style="color:#9ca3af; font-size:0.8rem; margin:0 0 12px 0; line-height:1.4;">PGR novo e correto + PCMSO alinhado. Solucao completa.</p>';
+        if (state.bundlePrice > 0) html += '<span style="color:#d4af37; font-weight:800; font-size:1.25rem;">' + formatCurrency(state.bundlePrice) + '</span>';
+        html += '</div>';
+        // PCMSO only
+        html += '<div class="offer-card offer-card-secondary" id="offer-pcmso-only" onclick="selectOffer(\'PCMSO_ONLY\')">';
+        html += '<p style="color:#d1d5db; font-weight:700; font-size:0.95rem; margin:0 0 6px 0;">Apenas PCMSO</p>';
+        html += '<p style="color:#9ca3af; font-size:0.8rem; margin:0 0 12px 0; line-height:1.4;">PCMSO usando o PGR atual (inconsistencias sob sua responsabilidade).</p>';
+        if (state.pcmsoPrice > 0) html += '<span style="color:#d1d5db; font-weight:800; font-size:1.25rem;">' + formatCurrency(state.pcmsoPrice) + '</span>';
+        html += '</div>';
+        html += '</div>';
+
+        html += '<div style="text-align:right;">';
+        html += '<button class="btn-primary" id="btn-offer-continue" disabled onclick="goStep(4)">Prosseguir para pagamento</button>';
+        html += '</div>';
+      }
+
+      container.innerHTML = html;
+    }
+
+    function selectOffer(offerId) {
+      state.selectedOffer = offerId;
+      var pgrCard = document.getElementById('offer-pgr-pcmso');
+      var pcmsoCard = document.getElementById('offer-pcmso-only');
+      if (pgrCard) pgrCard.classList.toggle('selected', offerId === 'PGR_PCMSO');
+      if (pcmsoCard) pcmsoCard.classList.toggle('selected', offerId === 'PCMSO_ONLY');
+      var btn = document.getElementById('btn-offer-continue');
+      if (btn) btn.disabled = false;
+    }
+
+    function selectOfferAndGo(offerId) {
+      state.selectedOffer = offerId;
+      goStep(4);
+    }
+
+    // =========================================================================
+    // STEP 4 - CHECKOUT
+    // =========================================================================
+    function renderCheckout() {
+      var finalPrice = state.selectedOffer === 'PGR_PCMSO' ? state.bundlePrice : state.pcmsoPrice;
+      var offerLabel = state.selectedOffer === 'PGR_PCMSO' ? 'PGR + PCMSO' : 'PCMSO Avulso';
+
+      var summary = document.getElementById('checkout-summary');
+      summary.innerHTML = '<div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.75rem;">'
+        + '<div><p style="color:#d1d5db; font-weight:600; margin:0;">' + offerLabel + '</p>'
+        + '<p style="color:#6b7280; font-size:0.8rem; margin:2px 0 0 0;">' + (state.company ? (state.company.razao_social || state.company.nome || '-') : '-') + '</p>'
+        + '<p style="color:#6b7280; font-size:0.8rem; margin:2px 0 0 0;">' + state.parsedCount + ' colaborador' + (state.parsedCount !== 1 ? 'es' : '') + '</p></div>'
+        + '<span style="color:#d4af37; font-weight:800; font-size:1.35rem;">' + formatCurrency(finalPrice) + '</span>'
+        + '</div>';
+      if (state.selectedOffer === 'PGR_PCMSO') {
+        summary.innerHTML += '<p style="color:#9ca3af; font-size:0.8rem; margin:8px 0 0 0; font-style:italic;">Inclui elaboracao de novo PGR completo + PCMSO alinhado</p>';
+      }
+
+      // Update checkout button
+      document.getElementById('btn-checkout').textContent = 'Confirmar e Contratar - ' + formatCurrency(finalPrice);
+
+      // Reset payment method
+      selectPayMethod('PIX');
+
+      // Build installment select
+      var sel = document.getElementById('installment-select');
+      sel.innerHTML = '';
+      for (var i = 1; i <= MAX_INSTALLMENTS; i++) {
+        var opt = document.createElement('option');
+        opt.value = i;
+        opt.textContent = i + 'x';
+        sel.appendChild(opt);
+      }
+      sel.value = MAX_INSTALLMENTS;
+      state.installmentCount = MAX_INSTALLMENTS;
+    }
+
+    function selectPayMethod(type) {
+      state.billingType = type;
+      ['pay-pix', 'pay-boleto', 'pay-cc'].forEach(function(id) {
+        document.getElementById(id).classList.remove('active');
+      });
+      var map = { PIX: 'pay-pix', BOLETO: 'pay-boleto', CREDIT_CARD: 'pay-cc' };
+      document.getElementById(map[type]).classList.add('active');
+      document.getElementById('cc-installments').classList.toggle('hidden', type !== 'CREDIT_CARD');
+
+      if (type === 'CREDIT_CARD') {
+        loadCardSimulation();
+      }
+    }
+
+    async function loadCardSimulation() {
+      var finalPrice = state.selectedOffer === 'PGR_PCMSO' ? state.bundlePrice : state.pcmsoPrice;
+      if (!finalPrice) return;
+
+      document.getElementById('cc-loading').classList.remove('hidden');
+      document.getElementById('cc-info').innerHTML = '';
+
+      try {
+        var sim = await simulateCreditCardInstallments(finalPrice, state.installmentCount);
+        state.cardSimulation = sim;
+      } catch (e) {
+        state.cardSimulation = buildInstallmentFallback(finalPrice, state.installmentCount);
+      }
+
+      document.getElementById('cc-loading').classList.add('hidden');
+      renderCcInfo();
+
+      // Update interest label
+      if (state.cardSimulation && state.cardSimulation.monthly_interest_rate > 0) {
+        document.getElementById('cc-interest-label').textContent = formatPercentWithDecimals(state.cardSimulation.monthly_interest_rate) + ' a.m.';
+      }
+    }
+
+    function onInstallmentChange() {
+      state.installmentCount = Number(document.getElementById('installment-select').value) || MAX_INSTALLMENTS;
+      loadCardSimulation();
+    }
+
+    function renderCcInfo() {
+      var info = document.getElementById('cc-info');
+      var sim = state.cardSimulation;
+      if (!sim || state.installmentCount <= 1) { info.innerHTML = ''; return; }
+      var html = '<span>Total no cartao: ' + formatCurrency(sim.total_value || state.pcmsoPrice) + '</span>';
+      if (sim.monthly_interest_rate > 0) {
+        html += '<span>Juros: ' + formatPercentWithDecimals(sim.monthly_interest_rate) + ' a.m.</span>';
+      }
+      info.innerHTML = html;
+    }
+
+    // =========================================================================
+    // STEP 4 - SUBMIT PAYMENT
+    // =========================================================================
+    async function handleSubmitPayment() {
+      var finalPrice = state.selectedOffer === 'PGR_PCMSO' ? state.bundlePrice : state.pcmsoPrice;
+      if (!finalPrice || !state.company || !state.selectedOffer) return;
+
+      document.getElementById('btn-checkout').disabled = true;
+      document.getElementById('btn-checkout').textContent = 'Processando...';
+      hideError('checkout-error');
+
+      try {
+        var company = state.company;
+        var offerId = state.selectedOffer;
+        var documents = offerId === 'PGR_PCMSO' ? ['PGR', 'PCMSO'] : ['PCMSO'];
+        var offerLabel = offerId === 'PGR_PCMSO' ? 'PGR + PCMSO' : 'PCMSO Avulso';
+        var cnpjVal = cleanDigits(document.getElementById('cnpj-input').value);
+
+        var p = state.pricing;
+        var baseValue;
+        if (offerId === 'PGR_PCMSO') {
+          baseValue = roundCurrency(calcularMensalidadePerCapita({
+            employeeCount: state.parsedCount,
+            valorBaseCapita: Number(p.valor_base_capita) || 10,
+            limitePlanoMinimo: Number(p.limite_plano_minimo) || 30,
+            valorExtraCapita: Number(p.valor_extra_capita) || 20,
+          }).total);
+        } else {
+          baseValue = roundCurrency(calcularPcmsoAvulso({
+            employeeCount: state.parsedCount,
+            valorBaseCapita: Number(p.pcmso_avulso_base_capita) || 7,
+            limitePlanoMinimo: Number(p.pcmso_avulso_limite_minimo) || 30,
+            valorExtraCapita: Number(p.pcmso_avulso_extra_capita) || 14,
+          }).total);
+        }
+
+        var documentOffer = {
+          offer_id: offerId,
+          recommendation_basis: 'PGR',
+          regulatory_title: null,
+          documents: documents,
+          label: offerLabel,
+          price: finalPrice,
+          employee_count: state.parsedCount,
+          source: 'pcmso_sales_page',
+          lead_id: state.leadId || null,
+        };
+
+        var body = {
+          cnpj: cleanDigits(company.cnpj || cnpjVal),
+          razao_social: company.razao_social || company.nome,
+          recommendation: offerId === 'PGR_PCMSO' ? 'PGR' : 'PCMSO_ONLY',
+          doc_label: offerLabel,
+          document_offer: documentOffer,
+          price: finalPrice,
+          billing_type: state.billingType,
+          contact_name: document.getElementById('contact-name').value.trim(),
+          contact_email: document.getElementById('contact-email').value.trim(),
+          contact_cpf: cleanDigits(document.getElementById('contact-cpf').value),
+          contact_phone: cleanDigits(document.getElementById('contact-phone').value) || undefined,
+          base_value: baseValue,
+          employee_count: state.parsedCount,
+          lead_id: state.leadId || undefined,
+          idempotency_key: crypto.randomUUID(),
+        };
+
+        if (state.billingType === 'CREDIT_CARD' && state.installmentCount > 1) {
+          body.installment_count = state.installmentCount;
+        }
+
+        var result = await sb.functions.invoke('asaas-checkout', { body: body });
+        var errorMsg = await extractFunctionError(result, 'Erro ao processar pagamento.');
+        if (errorMsg) { showError('checkout-error', errorMsg); resetCheckoutBtn(); return; }
+        if (!result.data || !result.data.success) { showError('checkout-error', (result.data && result.data.error) || 'Erro ao criar pagamento.'); resetCheckoutBtn(); return; }
+
+        state.paymentResult = result.data;
+        showStep(5);
+        renderPayment();
+        startPaymentPolling();
+      } catch (err) {
+        console.error('[PCMSO] Erro no checkout:', err);
+        showError('checkout-error', 'Erro de conexao. Tente novamente.');
+        resetCheckoutBtn();
+      }
+    }
+
+    function resetCheckoutBtn() {
+      var finalPrice = state.selectedOffer === 'PGR_PCMSO' ? state.bundlePrice : state.pcmsoPrice;
+      var btn = document.getElementById('btn-checkout');
+      btn.disabled = false;
+      btn.textContent = 'Confirmar e Contratar - ' + formatCurrency(finalPrice);
+    }
+
+    // =========================================================================
+    // STEP 5 - PAYMENT
+    // =========================================================================
+    function renderPayment() {
+      var pr = state.paymentResult;
+      if (!pr) return;
+      var contactEmail = document.getElementById('contact-email').value.trim();
+
+      if (pr.auto_confirmed) {
+        state.paymentConfirmed = true;
+        renderPaymentConfirmed(contactEmail);
+        return;
+      }
+
+      var html = '<h3 style="color:#fff; font-size:1.15rem; font-weight:700; margin-bottom:1.25rem;">Aguardando pagamento</h3>';
+
+      // PIX QR
+      if (state.billingType === 'PIX' && pr.pix_qrcode) {
+        html += '<div style="text-align:center; margin-bottom:1.5rem;">';
+        html += '<img src="data:image/png;base64,' + pr.pix_qrcode + '" alt="QR Code Pix" style="width:220px; height:220px; border-radius:12px; background:#fff; padding:12px;" />';
+        html += '</div>';
+      }
+
+      // PIX Payload
+      if (state.billingType === 'PIX' && pr.pix_payload) {
+        html += '<div style="margin-bottom:1.5rem;">';
+        html += '<div style="background:#111; border:1px solid #333; border-radius:8px; padding:1rem; font-size:0.8rem; color:#9ca3af; word-break:break-all; margin-bottom:0.75rem;">' + escapeHtml(pr.pix_payload) + '</div>';
+        html += '<button class="btn-primary" onclick="copyPix()" id="btn-copy-pix" style="width:100%; justify-content:center;">Copiar codigo Pix</button>';
+        html += '</div>';
+      }
+
+      // Invoice URL
+      if (pr.invoice_url) {
+        var label = state.billingType === 'CREDIT_CARD' ? 'Pagar com cartao no Asaas' : 'Acessar fatura do boleto';
+        html += '<a href="' + escapeHtml(pr.invoice_url) + '" target="_blank" rel="noopener noreferrer" class="btn-primary" style="display:block; text-align:center; text-decoration:none; margin-bottom:1rem; justify-content:center;">' + label + '</a>';
+      }
+
+      html += '<div style="text-align:center; margin-top:1rem;">';
+      html += '<div style="display:flex; justify-content:center; gap:8px; align-items:center; color:#6b7280; font-size:0.85rem;">';
+      html += '<svg class="spinner" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>';
+      html += ' Verificando pagamento automaticamente...';
+      html += '</div></div>';
+
+      document.getElementById('payment-pending').innerHTML = html;
+      document.getElementById('payment-confirmed').classList.add('hidden');
+    }
+
+    function renderPaymentConfirmed(contactEmail) {
+      var offerLabel = state.selectedOffer === 'PGR_PCMSO' ? 'PGR + PCMSO' : 'PCMSO';
+
+      var html = '<div style="color:#22c55e; margin-bottom:1rem; display:flex; justify-content:center;">';
+      html += '<svg width="56" height="56" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>';
+      html += '</div>';
+      html += '<h2 style="color:#22c55e; font-size:1.5rem; font-weight:800; margin:0 0 0.5rem 0;">Pagamento confirmado!</h2>';
+      html += '<p style="color:#d1d5db; font-size:1rem; margin:0 0 1.5rem 0; line-height:1.5;">Seu ' + offerLabel + ' sera elaborado pela equipe da AM Engenharia.</p>';
+      html += '<div class="dark-box" style="text-align:left;">';
+      html += '<h4 style="color:#d4af37; font-size:0.9rem; margin:0 0 0.75rem 0;">Proximos passos</h4>';
+      html += '<ul style="margin:0; padding-left:1.25rem; color:#9ca3af; font-size:0.88rem; line-height:1.8;">';
+      html += '<li>Voce recebera um e-mail em <strong style="color:#d1d5db;">' + escapeHtml(contactEmail) + '</strong> com dados de acesso ao sistema.</li>';
+      html += '<li>Acesse o sistema para acompanhar a elaboracao dos documentos.</li>';
+      if (state.selectedOffer === 'PGR_PCMSO') html += '<li>Um engenheiro entrara em contato para coleta de dados do PGR.</li>';
+      html += '<li>O documento ficara disponivel para assinatura digital apos revisao tecnica.</li>';
+      html += '</ul></div>';
+
+      document.getElementById('payment-confirmed').innerHTML = html;
+      document.getElementById('payment-confirmed').classList.remove('hidden');
+      document.getElementById('payment-pending').innerHTML = '';
+    }
+
+    function copyPix() {
+      if (!state.paymentResult || !state.paymentResult.pix_payload) return;
+      navigator.clipboard.writeText(state.paymentResult.pix_payload).then(function() {
+        var btn = document.getElementById('btn-copy-pix');
+        if (btn) { btn.textContent = 'Copiado!'; setTimeout(function() { btn.textContent = 'Copiar codigo Pix'; }, 3000); }
+      }).catch(function() {});
+    }
+
+    function startPaymentPolling() {
+      if (state.paymentConfirmed) return;
+      if (state.pollingInterval) clearInterval(state.pollingInterval);
+
+      state.pollingInterval = setInterval(async function() {
+        if (state.paymentConfirmed) { clearInterval(state.pollingInterval); return; }
+        try {
+          var data = await syncPaymentStatus(state.paymentResult.payment_id);
+          if (data && data.confirmed) {
+            state.paymentConfirmed = true;
+            clearInterval(state.pollingInterval);
+            renderPaymentConfirmed(document.getElementById('contact-email').value.trim());
+          }
+        } catch (e) {
+          console.error('[PCMSO] Erro ao verificar status:', e);
+        }
+      }, 5000);
+    }
+
+    // =========================================================================
+    // HELPERS
+    // =========================================================================
+    function showError(id, msg) {
+      var el = document.getElementById(id);
+      if (el) { el.textContent = msg; el.classList.remove('hidden'); }
+    }
+    function hideError(id) {
+      var el = document.getElementById(id);
+      if (el) el.classList.add('hidden');
+    }
+
+    function escapeHtml(str) {
+      var div = document.createElement('div');
+      div.appendChild(document.createTextNode(str || ''));
+      return div.innerHTML;
+    }
+
+    // =========================================================================
+    // APPLY CONFIG FROM DB
+    // =========================================================================
+    function applyConfig(cfg) {
+      // Hero
+      setText('hero-headline', cfg.hero_headline || 'PCMSO para sua empresa');
+      setText('hero-subheadline', cfg.hero_subheadline || '');
+      setText('hero-cta-btn', cfg.hero_cta_text || 'Contratar PCMSO agora');
+      setText('hero-sub-cta', cfg.hero_sub_cta || '');
+
+      // Video
+      if (cfg.show_video_section !== false) {
+        document.getElementById('section-video').classList.remove('hidden');
+        var vc = document.getElementById('video-content');
+        if (cfg.video_url) {
+          vc.innerHTML = '<iframe src="' + escapeHtml(cfg.video_url) + '" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>';
+        } else {
+          vc.innerHTML = '<div class="video-placeholder"><span>🎥</span><p>' + escapeHtml(cfg.video_placeholder_text || 'Video em breve') + '</p></div>';
+        }
+      }
+
+      // Process
+      setText('process-title', cfg.process_title || 'Como funciona');
+      var steps = cfg.process_steps || [];
+      var stepsHtml = '';
+      steps.forEach(function(s) {
+        stepsHtml += '<div class="process-step">';
+        stepsHtml += '<span class="step-badge">' + escapeHtml(s.number || '') + '</span>';
+        stepsHtml += '<div><p class="process-step-title">' + escapeHtml(s.title || '') + '</p>';
+        stepsHtml += '<p class="process-step-desc">' + escapeHtml(s.description || '') + '</p></div>';
+        stepsHtml += '</div>';
+      });
+      document.getElementById('process-steps').innerHTML = stepsHtml;
+
+      // Urgency
+      setText('urgency-title', cfg.urgency_title || '');
+      setText('urgency-body', cfg.urgency_body || '');
+      setText('urgency-consequences-title', cfg.urgency_consequences_title || '');
+      var conseqs = cfg.urgency_consequences_items || [];
+      var conseqHtml = '';
+      conseqs.forEach(function(c) {
+        conseqHtml += '<div class="consequence-card">';
+        conseqHtml += '<p class="consequence-label">' + escapeHtml(c.label || '') + '</p>';
+        conseqHtml += '<p class="consequence-text">' + escapeHtml(c.text || '') + '</p>';
+        conseqHtml += '</div>';
+      });
+      document.getElementById('urgency-consequences').innerHTML = conseqHtml;
+
+      // Solution
+      setText('solution-title', cfg.solution_title || '');
+      setText('solution-subtitle', cfg.solution_subtitle || '');
+      setText('solution-description', cfg.solution_description || '');
+      var feats = cfg.solution_features || [];
+      var featsHtml = '';
+      feats.forEach(function(f) {
+        featsHtml += '<div class="feature-item">';
+        featsHtml += '<span class="feature-emoji">' + escapeHtml(f.emoji || '') + '</span>';
+        featsHtml += '<span class="feature-text">' + escapeHtml(f.text || '') + '</span>';
+        featsHtml += '</div>';
+      });
+      document.getElementById('solution-features').innerHTML = featsHtml;
+
+      // Authority
+      setText('authority-title', cfg.authority_title || '');
+      setText('authority-subtitle', cfg.authority_subtitle || '');
+      var cards = cfg.authority_cards || [];
+      var cardsHtml = '';
+      cards.forEach(function(c) {
+        cardsHtml += '<div class="authority-card">';
+        cardsHtml += '<div class="authority-card-emoji">' + escapeHtml(c.emoji || '') + '</div>';
+        cardsHtml += '<div class="authority-card-title">' + escapeHtml(c.title || '') + '</div>';
+        cardsHtml += '<div class="authority-card-desc">' + escapeHtml(c.description || '') + '</div>';
+        cardsHtml += '</div>';
+      });
+      document.getElementById('authority-cards').innerHTML = cardsHtml;
+      var stats = cfg.authority_stats || [];
+      var statsHtml = '';
+      stats.forEach(function(s) {
+        statsHtml += '<div class="stat-item">';
+        statsHtml += '<div class="stat-value">' + escapeHtml(s.value || '') + '</div>';
+        statsHtml += '<div class="stat-label">' + escapeHtml(s.label || '') + '</div>';
+        statsHtml += '</div>';
+      });
+      document.getElementById('authority-stats').innerHTML = statsHtml;
+
+      // CTA
+      setText('cta-title', cfg.cta_title || '');
+      setText('cta-body', cfg.cta_body || '');
+      setText('cta-btn', cfg.cta_button_text || 'Comecar agora');
+      setText('cta-sub-text', cfg.cta_sub_text || '');
+
+      // FAQ
+      var faqs = cfg.faq_items || [];
+      var faqHtml = '';
+      faqs.forEach(function(f, i) {
+        faqHtml += '<div class="faq-item">';
+        faqHtml += '<button class="faq-question" onclick="toggleFaq(this)">';
+        faqHtml += '<span>' + escapeHtml(f.question || '') + '</span>';
+        faqHtml += '<span class="faq-arrow">&#9660;</span>';
+        faqHtml += '</button>';
+        faqHtml += '<div class="faq-answer">' + escapeHtml(f.answer || '') + '</div>';
+        faqHtml += '</div>';
+      });
+      document.getElementById('faq-list').innerHTML = faqHtml;
+    }
+
+    function setText(id, text) {
+      var el = document.getElementById(id);
+      if (el) el.textContent = text;
+    }
+
+    function toggleFaq(btn) {
+      var item = btn.parentElement;
+      item.classList.toggle('open');
+    }
+
+    // =========================================================================
+    // Override showStep to also render checkout when entering step 4
+    // =========================================================================
+    var _origShowStep = showStep;
+    showStep = function(n) {
+      _origShowStep(n);
+      if (n === 4) renderCheckout();
+    };
+
+    // =========================================================================
+    // INIT
+    // =========================================================================
+    async function init() {
+      setupInputMasks();
+
+      // Load pricing
+      await loadPricing();
+
+      // Load config from Supabase
+      var dbConfig = {};
+      if (sb) {
+        try {
+          var res = await sb.from('pcmso_sales_config').select('*').eq('singleton_key', true).single();
+          if (res.data) dbConfig = res.data;
+        } catch (e) {
+          console.error('[PCMSO] Erro ao carregar config:', e);
+        }
+      }
+
+      applyConfig(dbConfig);
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>

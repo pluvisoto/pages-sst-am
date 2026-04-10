@@ -5,6 +5,7 @@
     { "source": "/landingpage", "destination": "/landingpage.html" },
     { "source": "/contadores", "destination": "/contadores.html" },
     { "source": "/parceiros", "destination": "/contadores.html" },
+    { "source": "/pcmso", "destination": "/pcmso.html" },
     { "source": "/", "destination": "/landingpage.html" }
   ],
   "headers": [
